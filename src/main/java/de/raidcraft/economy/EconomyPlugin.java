@@ -3,6 +3,8 @@ package de.raidcraft.economy;
 import co.aikar.commands.PaperCommandManager;
 import de.raidcraft.economy.commands.AdminCommands;
 import de.raidcraft.economy.commands.PlayerCommands;
+import de.raidcraft.economy.entities.Account;
+import de.raidcraft.economy.entities.EconomyPlayer;
 import io.ebean.Database;
 import kr.entree.spigradle.annotations.PluginMain;
 import lombok.AccessLevel;
@@ -85,7 +87,8 @@ public class EconomyPlugin extends JavaPlugin {
 
         this.database = new EbeanWrapper(Config.builder(this)
                 .entities(
-                        // TODO: add your database entities here
+                        EconomyPlayer.class,
+                        Account.class
                 )
                 .build()).connect();
     }
