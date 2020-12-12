@@ -1,8 +1,8 @@
-package de.raidcraft.template;
+package de.raidcraft.economy;
 
 import co.aikar.commands.PaperCommandManager;
-import de.raidcraft.template.commands.AdminCommands;
-import de.raidcraft.template.commands.PlayerCommands;
+import de.raidcraft.economy.commands.AdminCommands;
+import de.raidcraft.economy.commands.PlayerCommands;
 import io.ebean.Database;
 import kr.entree.spigradle.annotations.PluginMain;
 import lombok.AccessLevel;
@@ -18,11 +18,11 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import java.io.File;
 
 @PluginMain
-public class PluginTemplate extends JavaPlugin {
+public class EconomyPlugin extends JavaPlugin {
 
     @Getter
     @Accessors(fluent = true)
-    private static PluginTemplate instance;
+    private static EconomyPlugin instance;
 
     private Database database;
     @Getter
@@ -34,11 +34,11 @@ public class PluginTemplate extends JavaPlugin {
     @Getter
     private static boolean testing = false;
 
-    public PluginTemplate() {
+    public EconomyPlugin() {
         instance = this;
     }
 
-    public PluginTemplate(
+    public EconomyPlugin(
             JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
         instance = this;

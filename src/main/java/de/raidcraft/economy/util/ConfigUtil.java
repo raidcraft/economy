@@ -1,4 +1,4 @@
-package de.raidcraft.template.util;
+package de.raidcraft.economy.util;
 
 import java.io.File;
 import java.nio.file.Path;
