@@ -4,7 +4,9 @@ import co.aikar.commands.PaperCommandManager;
 import de.raidcraft.economy.commands.AdminCommands;
 import de.raidcraft.economy.commands.PlayerCommands;
 import de.raidcraft.economy.entities.Account;
+import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
+import de.raidcraft.economy.entities.PlayerAccount;
 import io.ebean.Database;
 import kr.entree.spigradle.annotations.PluginMain;
 import lombok.AccessLevel;
@@ -31,6 +33,7 @@ public class EconomyPlugin extends JavaPlugin {
     @Setter(AccessLevel.PACKAGE)
     private PluginConfig pluginConfig;
 
+    private RCEconomy economy;
     private PaperCommandManager commandManager;
 
     @Getter
@@ -53,6 +56,7 @@ public class EconomyPlugin extends JavaPlugin {
         loadConfig();
         setupDatabase();
         if (!testing) {
+            setupVault();
             setupListener();
             setupCommands();
         }
@@ -68,6 +72,12 @@ public class EconomyPlugin extends JavaPlugin {
         getDataFolder().mkdirs();
         pluginConfig = new PluginConfig(new File(getDataFolder(), "config.yml").toPath());
         pluginConfig.loadAndSave();
+    }
+
+    private void setupVault() {
+
+        this.economy = new RCEconomy(getPluginConfig());
+        economy.enable();
     }
 
     private void setupListener() {
@@ -88,7 +98,8 @@ public class EconomyPlugin extends JavaPlugin {
         this.database = new EbeanWrapper(Config.builder(this)
                 .entities(
                         EconomyPlayer.class,
-                        Account.class
+                        PlayerAccount.class,
+                        BankAccount.class
                 )
                 .build()).connect();
     }

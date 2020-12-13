@@ -9,6 +9,7 @@ import net.silthus.ebean.BaseEntity;
 import org.bukkit.OfflinePlayer;
 
 import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +18,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Accessors(fluent = true)
-@Entity
-@Table(name = "rc_eco_accounts")
-public class Account extends BaseEntity {
+@MappedSuperclass
+public abstract class Account extends BaseEntity {
 
     public static final Finder<UUID, Account> find = new Finder<>(Account.class);
 

@@ -15,8 +15,6 @@ public class PluginConfig extends BukkitYamlConfiguration {
 
     @Comment("How many digits after 0 are supported.")
     private int fractionalDigits = 2;
-    @Comment("Set to false to disable bank support (accounts disconnected from players).")
-    private boolean bankSupport = true;
     private String currencyNameSingular = "Coin";
     private String currencyNamePlural = "Coins";
     private String currencySymbol = "c";

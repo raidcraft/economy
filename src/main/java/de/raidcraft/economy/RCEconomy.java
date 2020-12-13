@@ -1,21 +1,28 @@
 package de.raidcraft.economy;
 
 import de.raidcraft.economy.entities.Account;
+import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.ServicePriority;
 
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
+@Log(topic = "RCEconomy")
 public class RCEconomy implements Economy {
 
     private final String name = "RCEconomy";
@@ -26,15 +33,45 @@ public class RCEconomy implements Economy {
     @Setter(AccessLevel.PACKAGE)
     private boolean enabled;
 
+    void enable() {
+
+        if (isEnabled()) return;
+
+        load();
+
+        try {
+            Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
+            if (vault == null) {
+                log.severe("cannot inject Vault: the Vault plugin was not found!");
+                return;
+            }
+
+            Bukkit.getServicesManager().register(Economy.class,this, vault, ServicePriority.Normal);
+            Bukkit.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+            setEnabled(true);
+
+            log.info("injected custom Economy provider: " + getClass().getCanonicalName());
+        } catch (Exception e) {
+            log.severe("cannot inject Vault: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public void load() {
 
         getConfig().loadAndSave();
         this.decimalFormat = new DecimalFormat(getConfig().getDecimalFormat());
     }
+//
+//    public EconomyResponse transfer(OfflinePlayer fromPlayer, OfflinePlayer toPlayer, double amount, String details) {
+//
+//        EconomyPlayer from = EconomyPlayer.getOrCreate(fromPlayer);
+//        EconomyPlayer to = EconomyPlayer.getOrCreate(toPlayer);
+//    }
 
     @Override
     public boolean hasBankSupport() {
-        return getConfig().isBankSupport();
+        return true;
     }
 
     @Override
@@ -108,6 +145,20 @@ public class RCEconomy implements Economy {
         return has(player, amount);
     }
 
+    public EconomyResponse withdraw(Account account, double amount) {
+
+        double balance = account.balance();
+        double newBalance = balance - amount;
+        if (newBalance < 0) {
+            amount = amount + newBalance;
+            newBalance = 0;
+        }
+
+        account.balance(newBalance).save();
+
+        return new EconomyResponse(amount, newBalance, EconomyResponse.ResponseType.SUCCESS, null);
+    }
+
     @Override
     public EconomyResponse withdrawPlayer(String playerName, double amount) {
 
@@ -117,111 +168,236 @@ public class RCEconomy implements Economy {
                     EconomyResponse.ResponseType.FAILURE,
                     "Der Spieler " + playerName + " besitzt kein Konto und war vermutlich noch nie online.");
         }
-        double balance = account.get().balance();
-        double newBalance = balance - amount;
-        if (newBalance < 0) {
-            amount = amount + newBalance;
-            newBalance = 0;
-        }
 
-        account.get().balance(newBalance).save();
-
-        return new EconomyResponse(amount, newBalance, EconomyResponse.ResponseType.SUCCESS, null);
+        return withdraw(account.get(), amount);
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount) {
-        return null;
+
+        return withdraw(Account.of(player), amount);
     }
 
     @Override
     public EconomyResponse withdrawPlayer(String playerName, String worldName, double amount) {
-        return null;
+
+        return withdrawPlayer(playerName, amount);
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer player, String worldName, double amount) {
-        return null;
+
+        return withdrawPlayer(player, amount);
+    }
+
+    public EconomyResponse deposit(Account account, double amount) {
+
+        double balance = account.balance();
+        account.balance(balance + amount).save();
+
+        return new EconomyResponse(amount, account.balance(), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     @Override
     public EconomyResponse depositPlayer(String playerName, double amount) {
-        return null;
+
+        Optional<Account> account = Account.byName(playerName, Account.Type.PLAYER);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0,
+                    EconomyResponse.ResponseType.FAILURE,
+                    "Der Spieler " + playerName + " besitzt kein Konto und war vermutlich noch nie online.");
+        }
+
+        return deposit(account.get(), amount);
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
-        return null;
+
+        return deposit(Account.of(player), amount);
     }
 
     @Override
     public EconomyResponse depositPlayer(String playerName, String worldName, double amount) {
-        return null;
+
+        return depositPlayer(playerName, amount);
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer player, String worldName, double amount) {
-        return null;
+
+        return depositPlayer(player, amount);
+    }
+
+    public EconomyResponse createBank(String name, EconomyPlayer owner) {
+
+        BankAccount account = BankAccount.getOrCreate(name, owner);
+        return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     @Override
     public EconomyResponse createBank(String name, String player) {
-        return null;
+
+        Optional<EconomyPlayer> economyPlayer = EconomyPlayer.byName(player);
+        if (economyPlayer.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Spieler " + player + " existiert nicht und war vermutlich noch nie online");
+        }
+
+        return createBank(name, economyPlayer.get());
     }
 
     @Override
     public EconomyResponse createBank(String name, OfflinePlayer player) {
-        return null;
+
+        return createBank(name, EconomyPlayer.getOrCreate(player));
     }
 
     @Override
     public EconomyResponse deleteBank(String name) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+        account.get().delete();
+        return new EconomyResponse(0, account.get().balance(), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     @Override
     public EconomyResponse bankBalance(String name) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+        return new EconomyResponse(0, account.get().balance(), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     @Override
     public EconomyResponse bankHas(String name, double amount) {
-        return null;
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+        double balance = account.get().balance();
+        if (balance >= amount) {
+            return new EconomyResponse(amount, balance, EconomyResponse.ResponseType.SUCCESS, null);
+        }
+
+        return new EconomyResponse(amount, balance, EconomyResponse.ResponseType.FAILURE, "Die Bank hat nicht genug Geld.");
     }
 
     @Override
     public EconomyResponse bankWithdraw(String name, double amount) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+        return withdraw(account.get(), amount);
     }
 
     @Override
     public EconomyResponse bankDeposit(String name, double amount) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+        return deposit(account.get(), amount);
+    }
+
+    public EconomyResponse isBankOwner(Account account, EconomyPlayer player) {
+
+        if (account instanceof BankAccount && ((BankAccount) account).owner().equals(player)) {
+            return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.SUCCESS, null);
+        }
+        return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.FAILURE,
+                "Der Spieler " + player.name() + " ist nicht der Besitzer des Bank Accounts " + name);
     }
 
     @Override
     public EconomyResponse isBankOwner(String name, String playerName) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+
+        Optional<EconomyPlayer> economyPlayer = EconomyPlayer.byName(playerName);
+        if (economyPlayer.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Spieler " + playerName + " existiert nicht.");
+        }
+
+        return isBankOwner(account.get(), economyPlayer.get());
     }
 
     @Override
     public EconomyResponse isBankOwner(String name, OfflinePlayer player) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+
+        return isBankOwner(account.get(), EconomyPlayer.getOrCreate(player));
+    }
+
+    public EconomyResponse isBankMember(Account account, EconomyPlayer player) {
+
+        if (account instanceof BankAccount && ((BankAccount) account).members().contains(player)) {
+            return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.SUCCESS, null);
+        }
+
+        return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.FAILURE,
+                "Der Spieler " + player.name() + " ist kein Mitglied des Bank Accounts " + account.name());
     }
 
     @Override
     public EconomyResponse isBankMember(String name, String playerName) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+
+        Optional<EconomyPlayer> economyPlayer = EconomyPlayer.byName(playerName);
+        if (economyPlayer.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Spieler " + playerName + " existiert nicht.");
+        }
+
+        return isBankMember(account.get(), economyPlayer.get());
     }
 
     @Override
     public EconomyResponse isBankMember(String name, OfflinePlayer player) {
-        return null;
+
+        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        if (account.isEmpty()) {
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                    "Der Bank Account " + name + " existiert nicht.");
+        }
+
+        return isBankMember(account.get(), EconomyPlayer.getOrCreate(player));
     }
 
     @Override
     public List<String> getBanks() {
-        return null;
+
+        return BankAccount.find.all().stream()
+                .map(Account::name)
+                .collect(Collectors.toList());
     }
 
     @Override

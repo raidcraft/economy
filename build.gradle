@@ -36,7 +36,7 @@ spigot {
     authors = [project.property("author")]
     apiVersion = project.property("apiVersion")
     load = STARTUP
-    //    depends = ['']
+    depends = ['Vault']
 }
 
 compileJava {

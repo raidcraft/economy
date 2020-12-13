@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <createTable name="rc_eco_bank_accounts" identityType="external" pkName="pk_rc_eco_bank_accounts">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar"/>
+            <column name="type" type="varchar"/>
+            <column name="balance" type="double" notnull="true"/>
+            <column name="owner_id" type="uuid" references="rc_eco_players.id" foreignKeyName="fk_rc_eco_bank_accounts_owner_id" foreignKeyIndex="ix_rc_eco_bank_accounts_owner_id"/>
+            <column name="version" type="bigint" notnull="true"/>
+            <column name="when_created" type="timestamp" notnull="true"/>
+            <column name="when_modified" type="timestamp" notnull="true"/>
+        </createTable>
+        <createTable name="rc_eco_bank_accounts_eco_players" pkName="pk_rc_eco_bank_accounts_eco_players">
+            <column name="rc_eco_bank_accounts_id" type="uuid" notnull="true" primaryKey="true"/>
+            <column name="rc_eco_players_id" type="uuid" notnull="true" primaryKey="true"/>
+            <foreignKey name="fk_rc_eco_bank_accounts_eco_players_rc_eco_bank_accounts" columnNames="rc_eco_bank_accounts_id" refColumnNames="id" refTableName="rc_eco_bank_accounts" indexName="ix_rc_eco_bank_accounts_eco_players_rc_eco_bank_accounts"/>
+            <foreignKey name="fk_rc_eco_bank_accounts_eco_players_rc_eco_players" columnNames="rc_eco_players_id" refColumnNames="id" refTableName="rc_eco_players" indexName="ix_rc_eco_bank_accounts_eco_players_rc_eco_players"/>
+        </createTable>
+        <createTable name="rc_eco_players" identityType="external" pkName="pk_rc_eco_players">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar"/>
+            <column name="account_id" type="uuid" notnull="true" uniqueOneToOne="uq_rc_eco_players_account_id" references="rc_eco_player_accounts.id" foreignKeyName="fk_rc_eco_players_account_id"/>
+            <column name="version" type="bigint" notnull="true"/>
+            <column name="when_created" type="timestamp" notnull="true"/>
+            <column name="when_modified" type="timestamp" notnull="true"/>
+        </createTable>
+        <createTable name="rc_eco_players_eco_bank_accounts" pkName="pk_rc_eco_players_eco_bank_accounts">
+            <column name="rc_eco_players_id" type="uuid" notnull="true" primaryKey="true"/>
+            <column name="rc_eco_bank_accounts_id" type="uuid" notnull="true" primaryKey="true"/>
+            <foreignKey name="fk_rc_eco_players_eco_bank_accounts_rc_eco_players" columnNames="rc_eco_players_id" refColumnNames="id" refTableName="rc_eco_players" indexName="ix_rc_eco_players_eco_bank_accounts_rc_eco_players"/>
+            <foreignKey name="fk_rc_eco_players_eco_bank_accounts_rc_eco_bank_accounts" columnNames="rc_eco_bank_accounts_id" refColumnNames="id" refTableName="rc_eco_bank_accounts" indexName="ix_rc_eco_players_eco_bank_accounts_rc_eco_bank_accounts"/>
+        </createTable>
+        <createTable name="rc_eco_player_accounts" identityType="external" pkName="pk_rc_eco_player_accounts">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar"/>
+            <column name="type" type="varchar"/>
+            <column name="balance" type="double" notnull="true"/>
+            <column name="version" type="bigint" notnull="true"/>
+            <column name="when_created" type="timestamp" notnull="true"/>
+            <column name="when_modified" type="timestamp" notnull="true"/>
+        </createTable>
+        <createIndex indexName="ix_rc_eco_bank_accounts_name" tableName="rc_eco_bank_accounts" columns="name"/>
+        <createIndex indexName="ix_rc_eco_player_accounts_name" tableName="rc_eco_player_accounts" columns="name"/>
+    </changeSet>
+</migration>
