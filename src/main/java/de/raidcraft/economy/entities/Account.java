@@ -2,7 +2,6 @@ package de.raidcraft.economy.entities;
 
 import de.raidcraft.economy.TransactionReason;
 import io.ebean.Finder;
-import io.ebean.annotation.Index;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -10,16 +9,23 @@ import lombok.experimental.Accessors;
 import net.silthus.ebean.BaseEntity;
 import org.bukkit.OfflinePlayer;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
 @Accessors(fluent = true)
-@MappedSuperclass
-public abstract class Account extends BaseEntity {
+@Entity
+@Table(name = "rc_eco_accounts")
+public class Account extends BaseEntity {
 
     public static final UUID SERVER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
@@ -30,61 +36,24 @@ public abstract class Account extends BaseEntity {
         return EconomyPlayer.getOrCreate(player).account();
     }
 
-    public static Optional<Account> byName(String name) {
+    public static Account getServerAccount() {
 
-        return find.query().where()
-                .eq("name", name)
-                .findOneOrEmpty();
-    }
-
-    public static Optional<Account> byName(String name, String type) {
-
-        return find.query().where()
-                .eq("name", name)
-                .and()
-                .eq("type", type)
-                .findOneOrEmpty();
-    }
-
-    public static List<Account> ofType(String type) {
-
-        return find.query()
-                .where().eq("type", type)
-                .findList();
-    }
-
-    public static BankAccount getServerAccount() {
-
-        return (BankAccount) Optional.ofNullable(find.byId(SERVER_ID))
+        return Optional.ofNullable(find.byId(SERVER_ID))
                 .orElseGet(() -> {
-                    Account account = new BankAccount(Type.SERVER, null)
-                            .type(Type.SERVER);
+                    Account account = new Account();
                     account.id(SERVER_ID);
                     account.save();
                     return account;
                 });
     }
 
-    public static List<Account> getBankAccounts() {
-
-        return ofType(Type.BANK);
-    }
-
-    @Index
-    private String name;
-    private String type;
-
     private double balance;
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "source")
+    private List<Transaction> sentTransactions = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "target")
+    private List<Transaction> receivedTransactions = new ArrayList<>();
 
-    Account(String name) {
-        this.name = name;
-        this.type = Type.BANK;
-    }
-
-    Account(EconomyPlayer player) {
-        this.id(player.id());
-        this.name = player.name();
-        this.type = Type.PLAYER;
+    Account() {
     }
 
     /**
@@ -94,9 +63,27 @@ public abstract class Account extends BaseEntity {
      *
      * @return true if this is the server account
      */
-    public boolean isServer() {
+    public boolean isServerAccount() {
 
         return id().equals(SERVER_ID);
+    }
+
+    public boolean isPlayerAccount() {
+
+        return EconomyPlayer.of(this).isPresent();
+    }
+
+    public boolean isBankAccount() {
+
+        return BankAccount.of(this).isPresent();
+    }
+
+    public List<Transaction> transactions() {
+
+        return Stream.concat(
+                sentTransactions().stream(),
+                receivedTransactions().stream()
+        ).sorted().collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -139,14 +126,5 @@ public abstract class Account extends BaseEntity {
     public Transaction.Result deposit(double amount) {
 
         return Transaction.create(getServerAccount(), this, amount, TransactionReason.DEPOSIT).execute();
-    }
-
-    public static class Type {
-
-        private Type() {}
-
-        public static final String PLAYER = "PLAYER";
-        public static final String SERVER = "SERVER";
-        public static final String BANK = "BANK";
     }
 }

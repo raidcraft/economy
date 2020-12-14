@@ -115,8 +115,8 @@ public class RCEconomy implements Economy {
     @Deprecated
     public double getBalance(String playerName) {
 
-        return Account.byName(playerName, Account.Type.PLAYER)
-                .map(Account::balance)
+        return EconomyPlayer.byName(playerName)
+                .map(EconomyPlayer::balance)
                 .orElse(0d);
     }
 
@@ -176,7 +176,8 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse withdrawPlayer(String playerName, double amount) {
 
-        Optional<Account> account = Account.byName(playerName, Account.Type.PLAYER);
+        Optional<Account> account = EconomyPlayer.byName(playerName)
+                .map(EconomyPlayer::account);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0,
                     EconomyResponse.ResponseType.FAILURE,
@@ -218,7 +219,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse depositPlayer(String playerName, double amount) {
 
-        Optional<Account> account = Account.byName(playerName, Account.Type.PLAYER);
+        Optional<Account> account = EconomyPlayer.byName(playerName).map(EconomyPlayer::account);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0,
                     EconomyResponse.ResponseType.FAILURE,
@@ -273,7 +274,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse deleteBank(String name) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<BankAccount> account = BankAccount.byName(name);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -285,7 +286,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse bankBalance(String name) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<BankAccount> account = BankAccount.byName(name);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -295,7 +296,7 @@ public class RCEconomy implements Economy {
 
     @Override
     public EconomyResponse bankHas(String name, double amount) {
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<BankAccount> account = BankAccount.byName(name);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -311,7 +312,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse bankWithdraw(String name, double amount) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<Account> account = BankAccount.byName(name).map(BankAccount::account);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -322,7 +323,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse bankDeposit(String name, double amount) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<Account> account = BankAccount.byName(name).map(BankAccount::account);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -330,9 +331,9 @@ public class RCEconomy implements Economy {
         return deposit(account.get(), amount);
     }
 
-    public EconomyResponse isBankOwner(Account account, EconomyPlayer player) {
+    public EconomyResponse isBankOwner(BankAccount account, EconomyPlayer player) {
 
-        if (account instanceof BankAccount && ((BankAccount) account).owner().equals(player)) {
+        if (account.owner().equals(player)) {
             return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.SUCCESS, null);
         }
         return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.FAILURE,
@@ -342,7 +343,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse isBankOwner(String name, String playerName) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<BankAccount> account = BankAccount.byName(name);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -360,7 +361,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse isBankOwner(String name, OfflinePlayer player) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<BankAccount> account = BankAccount.byName(name);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -369,9 +370,9 @@ public class RCEconomy implements Economy {
         return isBankOwner(account.get(), EconomyPlayer.getOrCreate(player));
     }
 
-    public EconomyResponse isBankMember(Account account, EconomyPlayer player) {
+    public EconomyResponse isBankMember(BankAccount account, EconomyPlayer player) {
 
-        if (account instanceof BankAccount && ((BankAccount) account).members().contains(player)) {
+        if (account.members().contains(player)) {
             return new EconomyResponse(0, account.balance(), EconomyResponse.ResponseType.SUCCESS, null);
         }
 
@@ -382,7 +383,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse isBankMember(String name, String playerName) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<BankAccount> account = BankAccount.byName(name);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -400,7 +401,7 @@ public class RCEconomy implements Economy {
     @Override
     public EconomyResponse isBankMember(String name, OfflinePlayer player) {
 
-        Optional<Account> account = BankAccount.byName(name, Account.Type.BANK);
+        Optional<BankAccount> account = BankAccount.byName(name);
         if (account.isEmpty()) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
                     "Der Bank Account " + name + " existiert nicht.");
@@ -413,7 +414,7 @@ public class RCEconomy implements Economy {
     public List<String> getBanks() {
 
         return BankAccount.find.all().stream()
-                .map(Account::name)
+                .map(BankAccount::name)
                 .collect(Collectors.toList());
     }
 
@@ -433,7 +434,7 @@ public class RCEconomy implements Economy {
     @Deprecated
     public boolean hasAccount(String playerName) {
 
-        return Account.byName(playerName, Account.Type.PLAYER).isPresent();
+        return EconomyPlayer.byName(playerName).isPresent();
     }
 
     @Override

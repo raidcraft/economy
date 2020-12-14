@@ -6,9 +6,9 @@ import co.aikar.commands.PaperCommandManager;
 import com.google.common.base.Strings;
 import de.raidcraft.economy.commands.AdminCommands;
 import de.raidcraft.economy.commands.PlayerCommands;
+import de.raidcraft.economy.entities.Account;
 import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
-import de.raidcraft.economy.entities.PlayerAccount;
 import de.raidcraft.economy.entities.Transaction;
 import io.ebean.Database;
 import kr.entree.spigradle.annotations.PluginMain;
@@ -92,7 +92,7 @@ public class EconomyPlugin extends JavaPlugin {
 
     private void setupDefaultAccounts() {
 
-        BankAccount.getServerAccount().save();
+        Account.getServerAccount().save();
     }
 
     private void setupListener() {
@@ -111,6 +111,7 @@ public class EconomyPlugin extends JavaPlugin {
 
         // conditions
         registerHasEnoughCondition(commandManager);
+        registerOthersCondition(commandManager);
 
         commandManager.registerCommand(new AdminCommands(this));
         commandManager.registerCommand(new PlayerCommands(this));
@@ -140,12 +141,25 @@ public class EconomyPlugin extends JavaPlugin {
 
     private void registerHasEnoughCondition(PaperCommandManager commandManager) {
 
-        commandManager.getCommandConditions().addCondition(EconomyPlayer.class, "money", (context, execContext, player) -> {
-            double money = execContext.getResolvedArg("money", Double.class);
+        commandManager.getCommandConditions().addCondition(EconomyPlayer.class, "hasEnough", (context, execContext, player) -> {
+            double money = execContext.getResolvedArg(context.getConfigValue("var", "amount"), Double.class);
             if (!player.has(money)) {
                 throw new ConditionFailedException("Du hast nicht genügend " + getEconomy().currencyNamePlural()
                         + "! Du benötigst mindestens " + getEconomy().format(money));
             }
+        });
+    }
+
+    private void registerOthersCondition(PaperCommandManager commandManager) {
+
+        commandManager.getCommandConditions().addCondition(EconomyPlayer.class, "others", (context, execContext, value) -> {
+            if (context.getIssuer().hasPermission(PERMISSION_PREFIX + context.getConfigValue("perm", "cmd") + ".others")) {
+                return;
+            }
+            if (context.getIssuer().getUniqueId().equals(value.id())) {
+                return;
+            }
+            throw new ConditionFailedException("Du hast nicht genügend Rechte um Befehle im Namen von anderen Spielern auszuführen.");
         });
     }
 
@@ -154,7 +168,7 @@ public class EconomyPlugin extends JavaPlugin {
         this.database = new EbeanWrapper(Config.builder(this)
                 .entities(
                         EconomyPlayer.class,
-                        PlayerAccount.class,
+                        Account.class,
                         BankAccount.class,
                         Transaction.class
                 )

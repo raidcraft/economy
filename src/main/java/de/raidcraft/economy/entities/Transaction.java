@@ -25,7 +25,7 @@ import java.util.Map;
 @Accessors(fluent = true)
 @Entity
 @Table(name = "rc_eco_transactions")
-public class Transaction extends BaseEntity {
+public class Transaction extends BaseEntity implements Comparable<Transaction> {
 
     static {
         try {
@@ -130,14 +130,14 @@ public class Transaction extends BaseEntity {
     public Result execute() {
 
         String formattedAmount = RCEconomy.instance().format(amount());
-        if (!source.isServer() && !source().has(amount())) {
+        if (!source.isServerAccount() && !source().has(amount())) {
             return new Result(this, TransactionStatus.NOT_ENOUGH_MONEY,
-                    "Der Account " + source.name() + " enthält nicht genügend Geld (mind. " + formattedAmount + ") für die Transaktion.");
+                    "Der Account enthält nicht genügend Geld (mind. " + formattedAmount + ") für die Transaktion.");
         }
 
         double balance = source.balance() - amount;
         if (balance < 0) {
-            if (!source.isServer()) {
+            if (!source.isServerAccount()) {
                 amount = amount + balance;
             }
             balance = 0;
@@ -172,6 +172,12 @@ public class Transaction extends BaseEntity {
                 .details(details())
                 .data(data())
                 .execute();
+    }
+
+    @Override
+    public int compareTo(Transaction o) {
+
+        return whenModified().compareTo(o.whenModified());
     }
 
     @Value

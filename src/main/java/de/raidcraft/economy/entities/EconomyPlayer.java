@@ -1,5 +1,7 @@
 package de.raidcraft.economy.entities;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import de.raidcraft.economy.TransactionReason;
 import io.ebean.Finder;
 import lombok.Getter;
@@ -8,12 +10,15 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.silthus.ebean.BaseEntity;
 import org.bukkit.OfflinePlayer;
+import org.checkerframework.checker.units.qual.A;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -29,7 +34,6 @@ public class EconomyPlayer extends BaseEntity {
         return Optional.ofNullable(find.byId(player.getUniqueId()))
                 .orElseGet(() -> {
                     EconomyPlayer economyPlayer = new EconomyPlayer(player);
-                    economyPlayer.account(new PlayerAccount(economyPlayer));
                     economyPlayer.save();
                     return economyPlayer;
                 });
@@ -42,12 +46,18 @@ public class EconomyPlayer extends BaseEntity {
                 .findOneOrEmpty();
     }
 
+    public static Optional<EconomyPlayer> of(@NonNull Account account) {
+
+        return find.query()
+                .where().eq("account_id", account.id())
+                .findOneOrEmpty();
+    }
+
     private String name;
     @OneToOne(optional = false, cascade = CascadeType.ALL)
-    private PlayerAccount account;
+    private Account account = new Account();
     @OneToMany
     private List<BankAccount> ownedBankAccounts = new ArrayList<>();
-
     @ManyToMany
     private List<BankAccount> bankAccounts = new ArrayList<>();
 
@@ -56,9 +66,18 @@ public class EconomyPlayer extends BaseEntity {
         this.name(player.getName());
     }
 
+    public List<Transaction> transactions() {
+
+        return account.transactions();
+    }
+
     public boolean has(double amount) {
 
         return account.has(amount);
+    }
+
+    public double balance() {
+        return account.balance();
     }
 
     public Transaction.Result transfer(@NonNull Account target, double amount) {

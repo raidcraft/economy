@@ -40,7 +40,7 @@ class EconomyPlayerTest {
         UUID id = EconomyPlayer.getOrCreate(player).account().id();
 
         assertThat(Account.of(player))
-                .extracting(BaseEntity::id, Account::name)
-                .contains(id, player.getName());
+                .extracting(BaseEntity::id)
+                .isEqualTo(id);
     }
 }
