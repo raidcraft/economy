@@ -4,8 +4,7 @@ import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.PaperCommandManager;
 import com.google.common.base.Strings;
-import de.raidcraft.economy.commands.AdminCommands;
-import de.raidcraft.economy.commands.PlayerCommands;
+import de.raidcraft.economy.commands.Commands;
 import de.raidcraft.economy.entities.Account;
 import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
@@ -113,8 +112,7 @@ public class EconomyPlugin extends JavaPlugin {
         registerHasEnoughCondition(commandManager);
         registerOthersCondition(commandManager);
 
-        commandManager.registerCommand(new AdminCommands(this));
-        commandManager.registerCommand(new PlayerCommands(this));
+        commandManager.registerCommand(new Commands(this));
     }
 
     private void registerEconomyPlayerContext(PaperCommandManager commandManager) {

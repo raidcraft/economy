@@ -94,7 +94,7 @@ public class Account extends BaseEntity {
      */
     public boolean has(double amount) {
 
-        return balance() >= amount;
+        return balance >= amount;
     }
 
     /**

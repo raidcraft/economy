@@ -100,6 +100,16 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
         this.target_balance = target.balance();
     }
 
+    private Transaction(Account source, Account target, Transaction transaction, double amount) {
+
+        this(source, target);
+        this.amount = amount;
+        this.status = transaction.status;
+        this.reason = transaction.reason;
+        this.details = transaction.details;
+        this.data = Map.copyOf(transaction.data);
+    }
+
     public Transaction data(String key, Object value) {
 
         data.put(key, value);
@@ -128,6 +138,10 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
      */
     @Transactional
     public Result execute() {
+
+        if (amount < 0) {
+            return new Transaction(target, source, this, Math.abs(amount)).execute();
+        }
 
         String formattedAmount = RCEconomy.instance().format(amount());
         if (!source.isServerAccount() && !source().has(amount())) {
