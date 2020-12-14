@@ -1,19 +1,21 @@
 package de.raidcraft.economy;
 
+import co.aikar.commands.CommandIssuer;
+import com.google.common.base.Strings;
 import de.raidcraft.economy.entities.Account;
 import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
 import de.raidcraft.economy.entities.Transaction;
+import de.raidcraft.economy.util.TimeUtil;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.checkerframework.common.util.report.qual.ReportCreation;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -44,25 +46,29 @@ public final class Messages {
 
     public static <TIssuer> void send(TIssuer commandIssuer, Component message) {
 
-        if (commandIssuer instanceof Player) {
-            send((Player) commandIssuer, message);
-        } else if (commandIssuer instanceof ConsoleCommandSender) {
-            send((ConsoleCommandSender) commandIssuer, message);
-        } else if (commandIssuer instanceof RemoteConsoleCommandSender) {
-            send((RemoteConsoleCommandSender) commandIssuer, message);
+        Object issuer = ((CommandIssuer) commandIssuer).getIssuer();
+
+        if (issuer instanceof Player) {
+            sendPlayer((Player) issuer, message);
+        } else if (issuer instanceof ConsoleCommandSender) {
+            sendConsole((ConsoleCommandSender) issuer, message);
+        } else if (issuer instanceof RemoteConsoleCommandSender) {
+            sendRemote((RemoteConsoleCommandSender) issuer, message);
         }
     }
 
-    public static void send(Player player, Component message) {
+    public static void sendPlayer(Player player, Component message) {
         send(player.getUniqueId(), message);
     }
 
-    public static void send(ConsoleCommandSender sender, Component message) {
+    public static void sendConsole(ConsoleCommandSender sender, Component message) {
 
+        sender.sendMessage(PlainComponentSerializer.plain().serialize(message));
     }
 
-    public static void send(RemoteConsoleCommandSender sender, Component message) {
+    public static void sendRemote(RemoteConsoleCommandSender sender, Component message) {
 
+        sender.sendMessage(PlainComponentSerializer.plain().serialize(message));
     }
 
     public static Component player(EconomyPlayer player) {
@@ -74,6 +80,9 @@ public final class Messages {
 
     public static Component playerInfo(EconomyPlayer player) {
 
+        if (player == null) {
+            return text().build();
+        }
 
         return text().append(header(player.name()))
                 .append(text("Kontostand: ", YELLOW)).append(balance(player.account()))
@@ -84,9 +93,7 @@ public final class Messages {
 
         String balance = RCEconomy.instance().format(account.balance());
 
-        return text().append(text(balance, AQUA, BOLD)
-                .append(text(" [?]", GRAY))
-                .hoverEvent(balanceInfo(account)))
+        return text().append(text(balance, AQUA))
                 .build();
     }
 
@@ -171,16 +178,38 @@ public final class Messages {
 
         String formattedAmount = RCEconomy.instance().format(transaction.amount());
 
-        return text().append(header(text(formattedAmount, GOLD)
+        TextComponent.Builder builder = text().append(header(text(formattedAmount, GOLD)
                 .append(text(" - ", DARK_AQUA))
-                .append(text(transaction.reason().name(), GRAY)))
+                .append(text(transaction.reason().name(), GRAY))))
+                .append(text("Zeit: ", YELLOW))
+                .append(text(TimeUtil.formatDateTime(transaction.whenCreated()), GRAY)).append(newline())
                 .append(text("Quelle: ", YELLOW))
                 .append(account(transaction.source())).append(newline())
                 .append(text("Ziel: ", YELLOW))
                 .append(account(transaction.target())).append(newline())
                 .append(text("Betrag: ", YELLOW))
-                .append(text(formattedAmount, AQUA))
-        ).build();
+                .append(text(formattedAmount, AQUA));
+
+        if (!Strings.isNullOrEmpty(transaction.details())) {
+            builder.append(newline()).append(text("Details: ", YELLOW))
+                    .append(text(transaction.details(), GRAY, ITALIC));
+        }
+
+        return builder.build();
+    }
+
+    public static Component paySuccess(Transaction.Result result) {
+
+        String format = RCEconomy.instance().format(result.amount());
+        return text()
+                .append(text("Du", GOLD, BOLD)
+                        .hoverEvent(playerInfo(EconomyPlayer.of(result.transaction().source()).orElse(null))))
+                .append(text(" hast ", GREEN))
+                .append(account(result.transaction().target()))
+                .append(text(" erfolgreich ", GREEN))
+                .append(text(format, AQUA))
+                .append(text(" überwiesen.", GREEN))
+                .build();
     }
 
     public static Component transactionSuccess(Transaction.Result result) {

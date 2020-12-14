@@ -19,7 +19,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -103,7 +106,11 @@ public class RCEconomy implements Economy {
 
     @Override
     public String format(double amount) {
-        return getDecimalFormat().format(amount);
+        return NumberFormat.getCurrencyInstance(Locale.GERMANY)
+                .format(amount)
+                .replace('\u00A0', ' ')
+                .replace(" ", "")
+                .replace("€", getConfig().getCurrencySymbol());
     }
 
     public double getBalance(Account account) {

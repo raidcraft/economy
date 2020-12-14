@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <alterColumn columnName="status" tableName="rc_eco_transactions" type="varchar(17)" currentType="varchar(16)" currentNotnull="false" checkConstraint="check ( status in ('SUCCESS','NOT_ENOUGH_MONEY','FAILURE','PENDING','EMPTY_TRANSACTION','UNKNOWN'))" checkConstraintName="ck_rc_eco_transactions_status"/>
+    </changeSet>
+</migration>

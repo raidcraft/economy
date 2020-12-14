@@ -13,6 +13,7 @@ import lombok.Value;
 import lombok.experimental.Accessors;
 import net.silthus.ebean.BaseEntity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -62,7 +63,7 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
 
     public static Transaction create(@NonNull Account source, @NonNull Account target, double amount, TransactionReason reason) {
 
-        return create(source, target, amount).reason(reason);
+        return new Transaction(source, target).amount(amount).reason(reason);
     }
 
     public static Transaction create(@NonNull Account source, @NonNull Account target, double amount, TransactionReason reason, String details) {
@@ -75,11 +76,11 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
         return new Transaction(source, target).amount(amount).details(details);
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Account source;
     private double source_balance;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Account target;
     private double target_balance;
 
@@ -138,6 +139,10 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
      */
     @Transactional
     public Result execute() {
+
+        if (amount == 0) {
+            return new Result(this, TransactionStatus.EMPTY_TRANSACTION, "Die Transaktion erzeugt keine Änderung.");
+        }
 
         if (amount < 0) {
             return new Transaction(target, source, this, Math.abs(amount)).execute();

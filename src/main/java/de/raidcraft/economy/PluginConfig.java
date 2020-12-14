@@ -18,7 +18,7 @@ public class PluginConfig extends BukkitYamlConfiguration {
     private String currencyNameSingular = "Coin";
     private String currencyNamePlural = "Coins";
     private String currencySymbol = "c";
-    private String decimalFormat = "#,##";
+    private String decimalFormat = "#,##c";
     private DatabaseConfig database = new DatabaseConfig();
 
     public PluginConfig(Path path) {

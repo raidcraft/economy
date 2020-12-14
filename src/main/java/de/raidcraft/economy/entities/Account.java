@@ -13,10 +13,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,7 +24,7 @@ import java.util.stream.Stream;
 @Table(name = "rc_eco_accounts")
 public class Account extends BaseEntity {
 
-    public static final UUID SERVER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+    public static final UUID SERVER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     public static final Finder<UUID, Account> find = new Finder<>(Account.class);
 
@@ -83,7 +80,7 @@ public class Account extends BaseEntity {
         return Stream.concat(
                 sentTransactions().stream(),
                 receivedTransactions().stream()
-        ).sorted().collect(Collectors.toUnmodifiableList());
+        ).sorted(Comparator.reverseOrder()).collect(Collectors.toUnmodifiableList());
     }
 
     /**

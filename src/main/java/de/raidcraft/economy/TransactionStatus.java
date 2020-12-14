@@ -8,6 +8,7 @@ public enum TransactionStatus {
     NOT_ENOUGH_MONEY,
     FAILURE,
     PENDING,
+    EMPTY_TRANSACTION,
     UNKNOWN;
 
     @DbEnumValue

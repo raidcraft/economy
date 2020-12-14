@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <alterColumn columnName="reason" tableName="rc_eco_transactions" type="varchar(9)" currentType="varchar(8)" currentNotnull="false" checkConstraint="check ( reason in ('COMMAND','PLUGIN','ROLLBACK','WITHDRAW','DEPOSIT','SET_MONEY','OTHER'))" checkConstraintName="ck_rc_eco_transactions_reason"/>
+    </changeSet>
+</migration>

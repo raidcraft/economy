@@ -117,9 +117,14 @@ public class EconomyPlugin extends JavaPlugin {
 
     private void registerEconomyPlayerContext(PaperCommandManager commandManager) {
 
+        commandManager.getCommandContexts().registerIssuerOnlyContext(EconomyPlayer.class, c -> EconomyPlayer.getOrCreate(c.getPlayer()));
+
         commandManager.getCommandContexts().registerIssuerAwareContext(EconomyPlayer.class, c -> {
             String playerName = c.popFirstArg();
             if (Strings.isNullOrEmpty(playerName)) {
+                if (c.hasFlag("not-self")) {
+                    throw new InvalidCommandArgument("Bitte gebe einen Spieler an.");
+                }
                 Player player = c.getPlayer();
                 if (player == null) {
                     throw new InvalidCommandArgument("Bitte gebe einen Spieler an wenn du den Befehl von der Console ausführst.");
@@ -140,11 +145,18 @@ public class EconomyPlugin extends JavaPlugin {
     private void registerHasEnoughCondition(PaperCommandManager commandManager) {
 
         commandManager.getCommandConditions().addCondition(EconomyPlayer.class, "hasEnough", (context, execContext, player) -> {
-            double money = execContext.getResolvedArg(context.getConfigValue("var", "amount"), Double.class);
-            if (!player.has(money)) {
-                throw new ConditionFailedException("Du hast nicht genügend " + getEconomy().currencyNamePlural()
-                        + "! Du benötigst mindestens " + getEconomy().format(money));
+            for (String arg : execContext.getArgs()) {
+                try {
+                    double amount = Double.parseDouble(arg);
+                    if (!player.has(amount)) {
+                        throw new ConditionFailedException("Du hast nicht genügend " + getEconomy().currencyNamePlural()
+                                + "! Du benötigst mindestens " + getEconomy().format(amount));
+                    }
+                    return;
+                } catch (NumberFormatException ignored) {
+                }
             }
+            throw new ConditionFailedException("Keinen gültigen Überweisungsbetrag gefunden!");
         });
     }
 
