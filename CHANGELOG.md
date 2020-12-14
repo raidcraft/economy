@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/raidcraft/economy/compare/v1.1.0...v1.2.0) (2020-12-14)
+
+
+### Features
+
+* add paginated transaction history ([0e267e6](https://github.com/raidcraft/economy/commit/0e267e68391ab54ededf1586394ef984508f5e1f))
+
 # [1.1.0](https://github.com/raidcraft/economy/compare/v1.0.0...v1.1.0) (2020-12-14)
 
 
