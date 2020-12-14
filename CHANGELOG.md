@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/raidcraft/economy/compare/v1.0.0...v1.1.0) (2020-12-14)
+
+
+### Features
+
+* **cmd:** add /money add and remove commands ([ac76bb5](https://github.com/raidcraft/economy/commit/ac76bb57cf5ee30e923e64d5d0af2457f67b46f9))
+
 # 1.0.0 (2020-12-14)
 
 
