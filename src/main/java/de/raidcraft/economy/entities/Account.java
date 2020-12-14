@@ -1,16 +1,16 @@
 package de.raidcraft.economy.entities;
 
+import de.raidcraft.economy.TransactionReason;
 import io.ebean.Finder;
 import io.ebean.annotation.Index;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.silthus.ebean.BaseEntity;
 import org.bukkit.OfflinePlayer;
 
-import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +20,8 @@ import java.util.UUID;
 @Accessors(fluent = true)
 @MappedSuperclass
 public abstract class Account extends BaseEntity {
+
+    public static final UUID SERVER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     public static final Finder<UUID, Account> find = new Finder<>(Account.class);
 
@@ -51,6 +53,18 @@ public abstract class Account extends BaseEntity {
                 .findList();
     }
 
+    public static BankAccount getServerAccount() {
+
+        return (BankAccount) Optional.ofNullable(find.byId(SERVER_ID))
+                .orElseGet(() -> {
+                    Account account = new BankAccount(Type.SERVER, null)
+                            .type(Type.SERVER);
+                    account.id(SERVER_ID);
+                    account.save();
+                    return account;
+                });
+    }
+
     public static List<Account> getBankAccounts() {
 
         return ofType(Type.BANK);
@@ -59,17 +73,72 @@ public abstract class Account extends BaseEntity {
     @Index
     private String name;
     private String type;
+
     private double balance;
 
     Account(String name) {
         this.name = name;
-        this.type = Type.SERVER;
+        this.type = Type.BANK;
     }
 
     Account(EconomyPlayer player) {
         this.id(player.id());
         this.name = player.name();
         this.type = Type.PLAYER;
+    }
+
+    /**
+     * Checks if this account is the server account.
+     * <p>The server account can withdraw and deposit unlimited amounts if money.
+     * <p>Get the server account by calling {@link #getServerAccount()}.
+     *
+     * @return true if this is the server account
+     */
+    public boolean isServer() {
+
+        return id().equals(SERVER_ID);
+    }
+
+    /**
+     * Checks if the balance of this account is at least the given amount.
+     *
+     * @param amount the amount to check
+     * @return true if this account has enough money
+     */
+    public boolean has(double amount) {
+
+        return balance() >= amount;
+    }
+
+    /**
+     * Transfers the given amount of money from this account to the target account.
+     * @param target
+     * @param amount
+     * @return
+     */
+    public Transaction.Result transfer(@NonNull Account target, double amount) {
+
+        return Transaction.create(this, target, amount).execute();
+    }
+
+    public Transaction.Result transfer(@NonNull Account target, double amount, TransactionReason reason) {
+
+        return Transaction.create(this, target, amount, reason).execute();
+    }
+
+    public Transaction.Result transfer(@NonNull Account target, double amount, TransactionReason reason, String details) {
+
+        return Transaction.create(this, target, amount, details).reason(reason).execute();
+    }
+
+    public Transaction.Result withdraw(double amount) {
+
+        return transfer(getServerAccount(), amount, TransactionReason.WITHDRAW);
+    }
+
+    public Transaction.Result deposit(double amount) {
+
+        return Transaction.create(getServerAccount(), this, amount, TransactionReason.DEPOSIT).execute();
     }
 
     public static class Type {

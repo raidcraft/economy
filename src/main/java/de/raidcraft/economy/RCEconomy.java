@@ -3,9 +3,12 @@ package de.raidcraft.economy;
 import de.raidcraft.economy.entities.Account;
 import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
+import de.raidcraft.economy.entities.Transaction;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.java.Log;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -18,12 +21,15 @@ import org.bukkit.plugin.ServicePriority;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
 @Log(topic = "RCEconomy")
 public class RCEconomy implements Economy {
+
+    @Getter
+    @Accessors(fluent = true)
+    private static RCEconomy instance;
 
     private final String name = "RCEconomy";
 
@@ -32,6 +38,12 @@ public class RCEconomy implements Economy {
 
     @Setter(AccessLevel.PACKAGE)
     private boolean enabled;
+
+    public RCEconomy(PluginConfig config) {
+
+        this.config = config;
+        instance = this;
+    }
 
     void enable() {
 
@@ -94,6 +106,11 @@ public class RCEconomy implements Economy {
         return getDecimalFormat().format(amount);
     }
 
+    public double getBalance(Account account) {
+
+        return account.balance();
+    }
+
     @Override
     @Deprecated
     public double getBalance(String playerName) {
@@ -147,16 +164,13 @@ public class RCEconomy implements Economy {
 
     public EconomyResponse withdraw(Account account, double amount) {
 
-        double balance = account.balance();
-        double newBalance = balance - amount;
-        if (newBalance < 0) {
-            amount = amount + newBalance;
-            newBalance = 0;
+        Transaction.Result result = account.withdraw(amount);
+
+        if (result.success()) {
+            return new EconomyResponse(result.amount(), account.balance(), EconomyResponse.ResponseType.SUCCESS, result.error());
         }
 
-        account.balance(newBalance).save();
-
-        return new EconomyResponse(amount, newBalance, EconomyResponse.ResponseType.SUCCESS, null);
+        return new EconomyResponse(result.amount(), account.balance(), EconomyResponse.ResponseType.FAILURE, result.error());
     }
 
     @Override
@@ -192,10 +206,13 @@ public class RCEconomy implements Economy {
 
     public EconomyResponse deposit(Account account, double amount) {
 
-        double balance = account.balance();
-        account.balance(balance + amount).save();
+        Transaction.Result result = account.deposit(amount);
 
-        return new EconomyResponse(amount, account.balance(), EconomyResponse.ResponseType.SUCCESS, null);
+        if (!result.success()) {
+            return new EconomyResponse(result.amount(), account.balance(), EconomyResponse.ResponseType.FAILURE, result.error());
+        }
+
+        return new EconomyResponse(result.amount(), account.balance(), EconomyResponse.ResponseType.SUCCESS, result.error());
     }
 
     @Override

@@ -41,7 +41,7 @@ public class BankAccount extends Account {
     @ManyToMany
     private List<EconomyPlayer> members = new ArrayList<>();
 
-    BankAccount(String name, EconomyPlayer owner) {
+    public BankAccount(String name, EconomyPlayer owner) {
         super(name);
         type(Type.BANK);
         this.owner = owner;
