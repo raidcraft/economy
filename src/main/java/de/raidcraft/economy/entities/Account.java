@@ -2,6 +2,7 @@ package de.raidcraft.economy.entities;
 
 import de.raidcraft.economy.TransactionReason;
 import io.ebean.Finder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -37,13 +38,13 @@ public class Account extends BaseEntity {
 
         return Optional.ofNullable(find.byId(SERVER_ID))
                 .orElseGet(() -> {
-                    Account account = new Account();
-                    account.id(SERVER_ID);
-                    account.save();
+                    Account account = new Account(SERVER_ID);
+                    account.insert();
                     return account;
                 });
     }
 
+    @Setter(AccessLevel.PACKAGE)
     private double balance;
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "source")
     private List<Transaction> sentTransactions = new ArrayList<>();
@@ -51,6 +52,12 @@ public class Account extends BaseEntity {
     private List<Transaction> receivedTransactions = new ArrayList<>();
 
     Account() {
+    }
+
+    Account(UUID uuid) {
+
+        id(uuid);
+        balance(0);
     }
 
     /**
@@ -92,6 +99,16 @@ public class Account extends BaseEntity {
     public boolean has(double amount) {
 
         return balance >= amount;
+    }
+
+    public Transaction.Result setBalance(double balance) {
+
+        return Transaction.create(getServerAccount(), this, balance, TransactionReason.SET_BALANCE).execute();
+    }
+
+    public Transaction.Result setBalance(double balance, String details) {
+
+        return Transaction.create(getServerAccount(), this, balance, TransactionReason.SET_BALANCE, details).execute();
     }
 
     /**

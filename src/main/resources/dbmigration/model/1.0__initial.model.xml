@@ -44,8 +44,8 @@
             <column name="target_id" type="uuid" notnull="true" references="rc_eco_accounts.id" foreignKeyName="fk_rc_eco_transactions_target_id" foreignKeyIndex="ix_rc_eco_transactions_target_id"/>
             <column name="target_balance" type="double" notnull="true"/>
             <column name="amount" type="double" notnull="true"/>
-            <column name="status" type="varchar(16)" checkConstraint="check ( status in ('SUCCESS','NOT_ENOUGH_MONEY','FAILURE','PENDING','UNKNOWN'))" checkConstraintName="ck_rc_eco_transactions_status"/>
-            <column name="reason" type="varchar(8)" checkConstraint="check ( reason in ('COMMAND','PLUGIN','ROLLBACK','WITHDRAW','DEPOSIT','OTHER'))" checkConstraintName="ck_rc_eco_transactions_reason"/>
+            <column name="status" type="varchar(17)" checkConstraint="check ( status in ('SUCCESS','NOT_ENOUGH_MONEY','FAILURE','PENDING','EMPTY_TRANSACTION','INVALID','UNKNOWN'))" checkConstraintName="ck_rc_eco_transactions_status"/>
+            <column name="reason" type="varchar(11)" checkConstraint="check ( reason in ('COMMAND','PLUGIN','ROLLBACK','WITHDRAW','DEPOSIT','SET_BALANCE','OTHER'))" checkConstraintName="ck_rc_eco_transactions_reason"/>
             <column name="details" type="varchar"/>
             <column name="data" type="json"/>
             <column name="version" type="bigint" notnull="true"/>

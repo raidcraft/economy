@@ -2,10 +2,13 @@ package de.raidcraft.economy;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import de.raidcraft.economy.commands.Commands;
 import de.raidcraft.economy.entities.EconomyPlayer;
 import org.bukkit.entity.Player;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +57,7 @@ public class IntegrationTest {
             class set {
 
                 @Test
-                @DisplayName("/money set player amount")
+                @DisplayName("\"/money set player amount\" works")
                 void setMoneyShouldWork() {
 
                     server.dispatchCommand(opPlayer,"money set " + player.getName() + " 1000");

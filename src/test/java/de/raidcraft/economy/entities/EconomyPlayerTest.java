@@ -4,13 +4,11 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import de.raidcraft.economy.EconomyPlugin;
-import net.silthus.ebean.BaseEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,10 +35,29 @@ class EconomyPlayerTest {
     void shouldCreateAccountForNewPlayers() {
 
         PlayerMock player = server.addPlayer();
-        UUID id = EconomyPlayer.getOrCreate(player).account().id();
+        EconomyPlayer.getOrCreate(player);
 
-        assertThat(Account.of(player))
-                .extracting(BaseEntity::id)
-                .isEqualTo(id);
+        assertThat(EconomyPlayer.find.byId(player.getUniqueId()))
+                .isNotNull()
+                .extracting(EconomyPlayer::name)
+                .isEqualTo(player.getName());
+    }
+
+    @Nested
+    class Balance {
+
+        @Test
+        @DisplayName("should only create one transaction if balance is set directly")
+        void shouldOnlyCreateOneTransactionWhenBalanceIsSet() {
+
+            EconomyPlayer player = EconomyPlayer.getOrCreate(server.addPlayer());
+            player.account().balance(1000d).save();
+
+            player.setBalance(100d);
+
+            assertThat(player.account())
+                    .extracting(Account::balance, a -> a.transactions().size())
+                    .contains(100d, 1);
+        }
     }
 }

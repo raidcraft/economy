@@ -80,9 +80,24 @@ public class EconomyPlayer extends BaseEntity {
         return account.balance();
     }
 
+    public Transaction.Result setBalance(double balance) {
+
+        return account.setBalance(balance);
+    }
+
+    public Transaction.Result setBalance(double balance, String details) {
+
+        return account.setBalance(balance, details);
+    }
+
     public Transaction.Result transfer(@NonNull Account target, double amount) {
 
         return account.transfer(target, amount);
+    }
+
+    public Transaction.Result transfer(@NonNull Account target, double amount, TransactionReason reason) {
+
+        return account.transfer(target, amount, reason);
     }
 
     public Transaction.Result transfer(@NonNull Account target, double amount, TransactionReason reason, String details) {

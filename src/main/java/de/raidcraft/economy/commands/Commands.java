@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
 import de.raidcraft.economy.EconomyPlugin;
-import de.raidcraft.economy.Messages;
 import de.raidcraft.economy.TransactionReason;
 import de.raidcraft.economy.entities.Account;
 import de.raidcraft.economy.entities.EconomyPlayer;
@@ -13,11 +12,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.feature.pagination.Pagination;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -25,7 +22,6 @@ import static de.raidcraft.economy.EconomyPlugin.PERMISSION_PREFIX;
 import static de.raidcraft.economy.Messages.*;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA;
-import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
 
 @CommandAlias("money|eco|economy")
 public class Commands extends BaseCommand {
@@ -126,12 +122,11 @@ public class Commands extends BaseCommand {
     @CommandPermission(PERMISSION_PREFIX + "admin.balance.set")
     public void setMoney(EconomyPlayer player, double balance, @Optional String details) {
 
-        double oldBalance = player.account().balance();
-        double amount = balance - oldBalance;
-        Transaction.Result result = Transaction.create(Account.getServerAccount(), player.account(), amount, TransactionReason.SET_MONEY, details)
+        Transaction.Result result = player.setBalance(balance, details);
+        result.transaction()
                 .data("command", "/money set")
                 .data("issuer", getCurrentCommandIssuer().getUniqueId())
-                .execute();
+                .save();
 
         if (!result.success()) {
             send(getCurrentCommandIssuer(), transactionError(result));

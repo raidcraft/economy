@@ -140,12 +140,16 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
     @Transactional
     public Result execute() {
 
+        if (reason() == TransactionReason.SET_BALANCE) {
+            return executeSetBalance();
+        }
+
         if (amount == 0) {
             return new Result(this, TransactionStatus.EMPTY_TRANSACTION, "Die Transaktion erzeugt keine Änderung.");
         }
 
         if (amount < 0) {
-            return new Transaction(target, source, this, Math.abs(amount)).execute();
+            return new Result(this, TransactionStatus.INVALID, "Der Transaktionsbetrag darf nicht negativ sein.");
         }
 
         String formattedAmount = RCEconomy.instance().format(amount());
@@ -165,6 +169,16 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
         source.balance(balance);
         target.balance(target.balance() + amount);
 
+        status(TransactionStatus.SUCCESS);
+        save();
+
+        return new Result(this);
+    }
+
+    @Transactional
+    private Result executeSetBalance() {
+
+        target.balance(amount);
         status(TransactionStatus.SUCCESS);
         save();
 

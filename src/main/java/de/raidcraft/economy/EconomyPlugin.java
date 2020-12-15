@@ -66,9 +66,7 @@ public class EconomyPlugin extends JavaPlugin {
         setupDefaultAccounts();
         setupVault();
         setupCommands();
-        if (!isTesting()) {
-            setupListener();
-        }
+        setupListener();
     }
 
     public void reload() {

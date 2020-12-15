@@ -9,7 +9,7 @@ public enum TransactionReason {
     ROLLBACK,
     WITHDRAW,
     DEPOSIT,
-    SET_MONEY,
+    SET_BALANCE,
     OTHER;
 
     @DbEnumValue

@@ -50,15 +50,15 @@ create table rc_eco_transactions (
   target_id                     uuid not null,
   target_balance                double not null,
   amount                        double not null,
-  status                        varchar(16),
-  reason                        varchar(8),
+  status                        varchar(17),
+  reason                        varchar(11),
   details                       varchar(255),
   data                          clob,
   version                       bigint not null,
   when_created                  timestamp not null,
   when_modified                 timestamp not null,
-  constraint ck_rc_eco_transactions_status check ( status in ('SUCCESS','NOT_ENOUGH_MONEY','FAILURE','PENDING','UNKNOWN')),
-  constraint ck_rc_eco_transactions_reason check ( reason in ('COMMAND','PLUGIN','ROLLBACK','WITHDRAW','DEPOSIT','OTHER')),
+  constraint ck_rc_eco_transactions_status check ( status in ('SUCCESS','NOT_ENOUGH_MONEY','FAILURE','PENDING','EMPTY_TRANSACTION','INVALID','UNKNOWN')),
+  constraint ck_rc_eco_transactions_reason check ( reason in ('COMMAND','PLUGIN','ROLLBACK','WITHDRAW','DEPOSIT','SET_BALANCE','OTHER')),
   constraint pk_rc_eco_transactions primary key (id)
 );
 
