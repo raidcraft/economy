@@ -11,17 +11,20 @@ import de.raidcraft.economy.entities.Transaction;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.feature.pagination.Pagination;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.raidcraft.economy.EconomyPlugin.PERMISSION_PREFIX;
 import static de.raidcraft.economy.Messages.*;
 import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 @CommandAlias("money|eco|economy")
 public class Commands extends BaseCommand {
@@ -49,6 +52,32 @@ public class Commands extends BaseCommand {
         send(getCurrentCommandIssuer(), playerInfo(player));
     }
 
+    @CommandAlias("moneytop")
+    @Subcommand("top|list")
+    @CommandPermission(PERMISSION_PREFIX + "account.top")
+    public void top(@Default("1") int page) {
+
+        List<EconomyPlayer> topPlayers = EconomyPlayer.find.all()
+                .stream().sorted((o1, o2) -> Double.compare(o2.balance(), o1.balance()))
+                .collect(Collectors.toUnmodifiableList());
+
+        TextComponent header = text("Dagobert Duck Topliste ", DARK_AQUA);
+        Pagination<EconomyPlayer> pagination = Pagination.builder()
+                .width(Pagination.WIDTH - 6)
+                .build(header, new Pagination.Renderer.RowRenderer<>() {
+                    @Override
+                    public @NonNull Collection<Component> renderRow(@Nullable EconomyPlayer player, int index) {
+
+                        if (player == null) return Collections.singletonList(text().build());
+                        String format = plugin.getEconomy().format(player.balance());
+                        return Collections.singletonList(text((index + 1) + ". ", GREEN)
+                                .append(player(player).append(text(" - ", YELLOW))
+                                .append(text(format, AQUA, TextDecoration.ITALIC))));
+                    }
+                }, p -> "/money top " + p);
+        pagination.render(topPlayers, page).forEach(component -> send(getCurrentCommandIssuer(), component));
+    }
+
     @CommandAlias("moneyflow|transactions|flow")
     @Subcommand("flow|transactions|history")
     @CommandPermission(PERMISSION_PREFIX + "account.transactions")
@@ -56,7 +85,7 @@ public class Commands extends BaseCommand {
 
         TextComponent header = text("Transaktionen von ", DARK_AQUA).append(player(player));
         Pagination<Transaction> pagination = Pagination.builder()
-                .width(Pagination.WIDTH - 2)
+                .width(Pagination.WIDTH - 6)
                 .build(header, new Pagination.Renderer.RowRenderer<>() {
             @Override
             public @NonNull Collection<Component> renderRow(@Nullable Transaction value, int index) {
