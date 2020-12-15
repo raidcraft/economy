@@ -15,6 +15,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -28,7 +29,8 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 public final class Messages {
 
-    private Messages() {}
+    private Messages() {
+    }
 
     public static void send(UUID playerId, Component message) {
         if (EconomyPlugin.isTesting()) return;
@@ -164,13 +166,33 @@ public final class Messages {
 
         String format = RCEconomy.instance().format(transaction.amount());
 
-        return text().append(account(transaction.source()))
-                .append(text(" --> ", DARK_AQUA))
-                .append(account(transaction.target()))
-                .append(text(": ", YELLOW))
-                .append(text(format, AQUA))
-                .append(text(" [?]", GRAY, ITALIC)
-                        .hoverEvent(transactionInfo(transaction)))
+        TextComponent.Builder builder = text();
+        if (transaction.source().isServerAccount()) {
+            if (transaction.reason() == TransactionReason.SET_BALANCE) {
+                builder.append(text("=", DARK_AQUA, BOLD))
+                        .append(text(format, AQUA));
+            } else {
+                builder.append(text("+", DARK_GREEN, BOLD))
+                        .append(text(format, GREEN));
+            }
+        } else if (transaction.target().isServerAccount()) {
+            builder.append(text("-", DARK_RED, BOLD))
+                    .append(text(format, RED));
+        } else {
+            builder.append(account(transaction.source()))
+                    .append(text(" --> ", DARK_AQUA))
+                    .append(account(transaction.target()))
+                    .append(text(": ", YELLOW))
+                    .append(text(format, AQUA));
+        }
+
+        if (transaction.source().isServerAccount() || transaction.target().isServerAccount()) {
+            if (!Strings.isNullOrEmpty(transaction.details())) {
+                builder.append(text(" ")).append(text(transaction.details(), GRAY));
+            }
+        }
+
+        return builder.hoverEvent(transactionInfo(transaction))
                 .build();
     }
 
