@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/raidcraft/economy/compare/v1.2.0...v1.2.1) (2020-12-15)
+
+
+### Bug Fixes
+
+* **db:** properly create server account ([eecf3d3](https://github.com/raidcraft/economy/commit/eecf3d3a428fac4a859057bd9bf0300cb4721108))
+
 # [1.2.0](https://github.com/raidcraft/economy/compare/v1.1.0...v1.2.0) (2020-12-14)
 
 
