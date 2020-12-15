@@ -20,7 +20,6 @@ import org.bukkit.plugin.ServicePriority;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -77,12 +76,6 @@ public class RCEconomy implements Economy {
         getConfig().loadAndSave();
         this.decimalFormat = new DecimalFormat(getConfig().getDecimalFormat());
     }
-//
-//    public EconomyResponse transfer(OfflinePlayer fromPlayer, OfflinePlayer toPlayer, double amount, String details) {
-//
-//        EconomyPlayer from = EconomyPlayer.getOrCreate(fromPlayer);
-//        EconomyPlayer to = EconomyPlayer.getOrCreate(toPlayer);
-//    }
 
     @Override
     public boolean hasBankSupport() {
@@ -108,8 +101,7 @@ public class RCEconomy implements Economy {
     public String format(double amount) {
         return NumberFormat.getCurrencyInstance(Locale.GERMANY)
                 .format(amount)
-                .replace('\u00A0', ' ')
-                .replace(" ", "")
+                .replace("\u00A0", "")
                 .replace("€", getConfig().getCurrencySymbol());
     }
 

@@ -60,7 +60,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly spigot(mcVersion)
+    implementation spigot(mcVersion)
 
     implementation vault()
 

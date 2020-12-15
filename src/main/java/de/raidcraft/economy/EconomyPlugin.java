@@ -64,10 +64,10 @@ public class EconomyPlugin extends JavaPlugin {
         loadConfig();
         setupDatabase();
         setupDefaultAccounts();
-        if (!testing) {
+        if (!isTesting()) {
             setupVault();
-            setupListener();
             setupCommands();
+            setupListener();
         }
     }
 
