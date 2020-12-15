@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/raidcraft/economy/compare/v1.2.1...v1.3.0) (2020-12-15)
+
+
+### Features
+
+* **transaction:** store original and new balance ([493e5c8](https://github.com/raidcraft/economy/commit/493e5c87b7244eaab79d72dbb5d8e3b23b43f16d))
+
 ## [1.2.1](https://github.com/raidcraft/economy/compare/v1.2.0...v1.2.1) (2020-12-15)
 
 
