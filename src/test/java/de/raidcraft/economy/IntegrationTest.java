@@ -2,6 +2,7 @@ package de.raidcraft.economy;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import de.raidcraft.economy.entities.EconomyPlayer;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
@@ -63,6 +64,54 @@ public class IntegrationTest {
                     server.dispatchCommand(opPlayer,"money set " + player.getName() + " 1000");
                     assertThat(EconomyPlayer.getOrCreate(player).balance())
                             .isEqualTo(1000d);
+                }
+            }
+
+            @Nested
+            class pay {
+
+                PlayerMock source;
+                PlayerMock target;
+
+                @BeforeEach
+                void setUp() {
+
+                    source = server.addPlayer("source");
+                    source.addAttachment(plugin, EconomyPlugin.PERMISSION_PREFIX + "money.pay", true);
+                    target = server.addPlayer("target");
+
+                    EconomyPlayer.getOrCreate(source).setBalance(100);
+                    EconomyPlayer.getOrCreate(target).setBalance(0);
+                }
+
+                @Test
+                @DisplayName("/money pay player amount should transfer money correctly")
+                void payShouldTransferMoney() {
+
+                    server.dispatchCommand(source, "money pay " + target.getName() + " 100");
+
+                    assertThat(EconomyPlayer.getOrCreate(source).balance()).isEqualTo(0d);
+                    assertThat(EconomyPlayer.getOrCreate(target).balance()).isEqualTo(100d);
+                }
+
+                @Test
+                @DisplayName("/money pay should not work if source has not enough money")
+                void payShouldNotWorkIfSourceHasNotEnoughMoney() {
+
+                    server.dispatchCommand(source, "money pay " + target.getName() + " 101");
+
+                    assertThat(EconomyPlayer.getOrCreate(source).balance()).isEqualTo(100d);
+                    assertThat(EconomyPlayer.getOrCreate(target).balance()).isEqualTo(0d);
+                }
+
+                @Test
+                @DisplayName("/money pay should not work with negative amounts")
+                void payShouldNotWorkWithNegativeAmounts() {
+
+                    server.dispatchCommand(source, "money pay " + target.getName() + " -50");
+
+                    assertThat(EconomyPlayer.getOrCreate(source).balance()).isEqualTo(100d);
+                    assertThat(EconomyPlayer.getOrCreate(target).balance()).isEqualTo(0d);
                 }
             }
         }

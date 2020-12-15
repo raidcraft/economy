@@ -46,9 +46,11 @@ create table rc_eco_players_eco_bank_accounts (
 create table rc_eco_transactions (
   id                            uuid not null,
   source_id                     uuid not null,
-  source_balance                double not null,
+  old_source_balance            double not null,
+  new_source_balance            double not null,
   target_id                     uuid not null,
-  target_balance                double not null,
+  old_target_balance            double not null,
+  new_target_balance            double not null,
   amount                        double not null,
   status                        varchar(17),
   reason                        varchar(11),

@@ -40,9 +40,11 @@
         <createTable name="rc_eco_transactions" identityType="external" pkName="pk_rc_eco_transactions">
             <column name="id" type="uuid" primaryKey="true" identity="true"/>
             <column name="source_id" type="uuid" notnull="true" references="rc_eco_accounts.id" foreignKeyName="fk_rc_eco_transactions_source_id" foreignKeyIndex="ix_rc_eco_transactions_source_id"/>
-            <column name="source_balance" type="double" notnull="true"/>
+            <column name="old_source_balance" type="double" notnull="true"/>
+            <column name="new_source_balance" type="double" notnull="true"/>
             <column name="target_id" type="uuid" notnull="true" references="rc_eco_accounts.id" foreignKeyName="fk_rc_eco_transactions_target_id" foreignKeyIndex="ix_rc_eco_transactions_target_id"/>
-            <column name="target_balance" type="double" notnull="true"/>
+            <column name="old_target_balance" type="double" notnull="true"/>
+            <column name="new_target_balance" type="double" notnull="true"/>
             <column name="amount" type="double" notnull="true"/>
             <column name="status" type="varchar(17)" checkConstraint="check ( status in ('SUCCESS','NOT_ENOUGH_MONEY','FAILURE','PENDING','EMPTY_TRANSACTION','INVALID','UNKNOWN'))" checkConstraintName="ck_rc_eco_transactions_status"/>
             <column name="reason" type="varchar(11)" checkConstraint="check ( reason in ('COMMAND','PLUGIN','ROLLBACK','WITHDRAW','DEPOSIT','SET_BALANCE','OTHER'))" checkConstraintName="ck_rc_eco_transactions_reason"/>

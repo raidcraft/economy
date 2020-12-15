@@ -78,11 +78,13 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Account source;
-    private double source_balance;
+    private double oldSourceBalance;
+    private double newSourceBalance;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Account target;
-    private double target_balance;
+    private double oldTargetBalance;
+    private double newTargetBalance;
 
     private double amount;
 
@@ -96,9 +98,9 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
     Transaction(Account source, Account target) {
 
         this.source = source;
-        this.source_balance = source.balance();
+        this.oldSourceBalance = source.balance();
         this.target = target;
-        this.target_balance = target.balance();
+        this.oldTargetBalance = target.balance();
     }
 
     private Transaction(Account source, Account target, Transaction transaction, double amount) {
@@ -166,8 +168,14 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
             balance = 0;
         }
 
-        source.balance(balance);
-        target.balance(target.balance() + amount);
+        newSourceBalance(balance);
+        newTargetBalance(target.balance() + amount);
+
+        source.balance(newSourceBalance);
+        target.balance(newTargetBalance);
+
+        target.receivedTransactions().add(this);
+        source.sentTransactions().add(this);
 
         status(TransactionStatus.SUCCESS);
         save();
@@ -175,10 +183,15 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
         return new Result(this);
     }
 
-    @Transactional
     private Result executeSetBalance() {
 
+        newTargetBalance(amount);
+
         target.balance(amount);
+
+        target.receivedTransactions().add(this);
+        source.sentTransactions().add(this);
+
         status(TransactionStatus.SUCCESS);
         save();
 

@@ -71,7 +71,7 @@ public class Commands extends BaseCommand {
     @Subcommand("pay")
     @CommandAlias("pay")
     @CommandCompletion("@players * *")
-    @CommandPermission(PERMISSION_PREFIX + "pay")
+    @CommandPermission(PERMISSION_PREFIX + "money.pay")
     public void pay(EconomyPlayer target, double amount, @Optional String details) {
 
         if (!getCurrentCommandIssuer().isPlayer()) {
