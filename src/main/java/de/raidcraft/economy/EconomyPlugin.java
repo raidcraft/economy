@@ -64,9 +64,9 @@ public class EconomyPlugin extends JavaPlugin {
         loadConfig();
         setupDatabase();
         setupDefaultAccounts();
+        setupVault();
+        setupCommands();
         if (!isTesting()) {
-            setupVault();
-            setupCommands();
             setupListener();
         }
     }
@@ -102,6 +102,10 @@ public class EconomyPlugin extends JavaPlugin {
     private void setupCommands() {
 
         this.commandManager = new PaperCommandManager(this);
+        commandManager.setDefaultExceptionHandler((command, registeredCommand, sender, args, t) -> {
+            t.printStackTrace();
+            return true;
+        });
 
         // contexts
         registerEconomyPlayerContext(commandManager);

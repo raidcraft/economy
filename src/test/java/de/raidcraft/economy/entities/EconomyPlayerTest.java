@@ -22,7 +22,7 @@ class EconomyPlayerTest {
     @BeforeEach
     void setUp() {
 
-        this.server = MockBukkit.mock();
+        this.server = MockBukkit.mock(new de.raidcraft.economy.ServerMock());
         this.plugin = MockBukkit.load(EconomyPlugin.class);
     }
 
