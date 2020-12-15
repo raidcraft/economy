@@ -1,3 +1,11 @@
+# [1.4.0](https://github.com/raidcraft/economy/compare/v1.3.0...v1.4.0) (2020-12-15)
+
+
+### Features
+
+* **cmd:** add /money top command ([3a9c9e4](https://github.com/raidcraft/economy/commit/3a9c9e4356d256d5e7de5696d652bcd4bc036fb6))
+* shorten server transactions and display details ([7de8b5e](https://github.com/raidcraft/economy/commit/7de8b5e1fe87f3ab57e70bdccc52c3a08779697f))
+
 # [1.3.0](https://github.com/raidcraft/economy/compare/v1.2.1...v1.3.0) (2020-12-15)
 
 
