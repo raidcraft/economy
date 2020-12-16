@@ -1,0 +1,5 @@
+archivesBaseName = project.property("pluginName") + "-wrapper"
+
+dependencies {
+    implementation project(':core')
+}
