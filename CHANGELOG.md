@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/raidcraft/economy/compare/v1.5.0...v1.5.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* **build:** use jdk11 for jitpack builds ([3df6dc8](https://github.com/raidcraft/economy/commit/3df6dc8e95d22a76fe8e3276d7f2e6afba50f751))
+
 # [1.5.0](https://github.com/raidcraft/economy/compare/v1.4.0...v1.5.0) (2020-12-16)
 
 
