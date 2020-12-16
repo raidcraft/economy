@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/raidcraft/economy/compare/v1.4.0...v1.5.0) (2020-12-16)
+
+
+### Features
+
+* add wrapper class for RCEconomy and Vault ([c9559b5](https://github.com/raidcraft/economy/commit/c9559b561faa81314cf88dcb57edc29306107077))
+
 # [1.4.0](https://github.com/raidcraft/economy/compare/v1.3.0...v1.4.0) (2020-12-15)
 
 
