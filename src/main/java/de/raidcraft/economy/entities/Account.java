@@ -1,5 +1,6 @@
 package de.raidcraft.economy.entities;
 
+import com.fasterxml.jackson.databind.ser.impl.WritableObjectId;
 import de.raidcraft.economy.TransactionReason;
 import io.ebean.Finder;
 import lombok.AccessLevel;
@@ -137,8 +138,31 @@ public class Account extends BaseEntity {
         return transfer(getServerAccount(), amount, TransactionReason.WITHDRAW);
     }
 
+    public Transaction.Result withdraw(double amount, String details) {
+
+        return transfer(getServerAccount(), amount, TransactionReason.WITHDRAW, details);
+    }
+
+    public Transaction.Result withdraw(double amount, String details, Map<String, Object> data) {
+
+        return Transaction.create(this, getServerAccount(), amount, TransactionReason.WITHDRAW, details)
+                .data(data).execute();
+    }
+
     public Transaction.Result deposit(double amount) {
 
         return Transaction.create(getServerAccount(), this, amount, TransactionReason.DEPOSIT).execute();
+    }
+
+    public Transaction.Result deposit(double amount, String details) {
+
+        return Transaction.create(getServerAccount(), this, amount, details).execute();
+    }
+
+    public Transaction.Result deposit(double amount, String details, Map<String, Object> data) {
+
+        return Transaction.create(getServerAccount(), this, amount, details)
+                .data(data)
+                .execute();
     }
 }

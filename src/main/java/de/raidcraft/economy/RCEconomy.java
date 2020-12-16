@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -163,13 +164,33 @@ public class RCEconomy implements Economy {
 
     public EconomyResponse withdraw(Account account, double amount) {
 
-        Transaction.Result result = account.withdraw(amount);
+        return withdraw(account, amount, null);
+    }
+
+    public EconomyResponse withdraw(Account account, double amount, String details) {
+
+        return withdraw(account, amount, details, null);
+    }
+
+    public EconomyResponse withdraw(Account account, double amount, String details, Map<String, Object> data) {
+
+        Transaction.Result result = account.withdraw(amount, details, data);
 
         if (result.success()) {
             return new EconomyResponse(result.amount(), account.balance(), EconomyResponse.ResponseType.SUCCESS, result.error());
         }
 
         return new EconomyResponse(result.amount(), account.balance(), EconomyResponse.ResponseType.FAILURE, result.error());
+    }
+
+    public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount, String details) {
+
+        return withdraw(EconomyPlayer.getOrCreate(player).account(), amount, details);
+    }
+
+    public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount, String details, Map<String, Object> data) {
+
+        return withdraw(EconomyPlayer.getOrCreate(player).account(), amount, details, data);
     }
 
     @Override
@@ -206,7 +227,17 @@ public class RCEconomy implements Economy {
 
     public EconomyResponse deposit(Account account, double amount) {
 
-        Transaction.Result result = account.deposit(amount);
+        return deposit(account, amount, null);
+    }
+
+    public EconomyResponse deposit(Account account, double amount, String details) {
+
+        return deposit(account, amount, details, null);
+    }
+
+    public EconomyResponse deposit(Account account, double amount, String details, Map<String, Object> data) {
+
+        Transaction.Result result = account.deposit(amount, details, data);
 
         if (!result.success()) {
             return new EconomyResponse(result.amount(), account.balance(), EconomyResponse.ResponseType.FAILURE, result.error());
@@ -232,6 +263,16 @@ public class RCEconomy implements Economy {
     public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
 
         return deposit(Account.of(player), amount);
+    }
+
+    public EconomyResponse depositPlayer(OfflinePlayer player, double amount, String details) {
+
+        return deposit(Account.of(player), amount, details);
+    }
+
+    public EconomyResponse depositPlayer(OfflinePlayer player, double amount, String details, Map<String, Object> data) {
+
+        return deposit(Account.of(player), amount, details, data);
     }
 
     @Override

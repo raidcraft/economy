@@ -113,6 +113,16 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
         this.data = Map.copyOf(transaction.data);
     }
 
+    public Transaction data(Map<String, Object> data) {
+
+        if (data == null) {
+            this.data = new HashMap<>();
+        } else {
+            this.data = data;
+        }
+        return this;
+    }
+
     public Transaction data(String key, Object value) {
 
         data.put(key, value);

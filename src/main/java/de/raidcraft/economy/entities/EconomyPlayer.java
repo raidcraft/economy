@@ -110,8 +110,16 @@ public class EconomyPlayer extends BaseEntity {
         return account.withdraw(amount);
     }
 
+    public Transaction.Result withdraw(double amount, String details) {
+        return account.withdraw(amount, details);
+    }
+
     public Transaction.Result deposit(double amount) {
 
         return account.deposit(amount);
+    }
+
+    public Transaction.Result deposit(double amount, String details) {
+        return account.deposit(amount, details);
     }
 }

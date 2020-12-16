@@ -56,7 +56,6 @@ repositories {
     spigot()
     maven { url = "https://repo.aikar.co/content/groups/aikar/" }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    vault()
 }
 
 dependencies {
