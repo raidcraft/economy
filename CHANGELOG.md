@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/raidcraft/economy/compare/v1.5.1...v1.5.2) (2020-12-16)
+
+
+### Bug Fixes
+
+* **vault:** include vault api as transparent dependency ([0ab37c4](https://github.com/raidcraft/economy/commit/0ab37c400cb4af6286f4587a2556fea318dbf57e))
+
 ## [1.5.1](https://github.com/raidcraft/economy/compare/v1.5.0...v1.5.1) (2020-12-16)
 
 
