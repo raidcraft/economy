@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/raidcraft/economy/compare/v1.5.2...v1.5.3) (2020-12-17)
+
+
+### Bug Fixes
+
+* **wrapper:** get the proper Economy instance from the plugin ([648d8bb](https://github.com/raidcraft/economy/commit/648d8bb71ed86f1a973d6d88e56dc45cbd54fa93))
+
 ## [1.5.2](https://github.com/raidcraft/economy/compare/v1.5.1...v1.5.2) (2020-12-16)
 
 
