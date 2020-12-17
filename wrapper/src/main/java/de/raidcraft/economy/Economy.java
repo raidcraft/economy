@@ -29,7 +29,7 @@ public class Economy implements net.milkbowl.vault.economy.Economy {
         }
         Plugin rcEconomy = Bukkit.getPluginManager().getPlugin("RCEconomy");
         if (rcEconomy != null && rcEconomy.isEnabled()) {
-            instance = new Economy((RCEconomy) rcEconomy);
+            instance = new Economy(((EconomyPlugin) rcEconomy).getEconomy());
         } else {
             RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Bukkit.getServer().getServicesManager()
                     .getRegistration(net.milkbowl.vault.economy.Economy.class);
