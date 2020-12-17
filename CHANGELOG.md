@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/raidcraft/economy/compare/v1.5.3...v2.0.0) (2020-12-17)
+
+
+### Bug Fixes
+
+* **wrapper:** move economy wrapper into its own package to avoid shading problems ([53be886](https://github.com/raidcraft/economy/commit/53be886ad53f12ae68d8da01ee1c8225fba23913))
+
+
+### BREAKING CHANGES
+
+* **wrapper:** the economy wrapper is now located in de.raidcraft.economy.wrapper. You need to adjust your shading and imports.
+
 ## [1.5.3](https://github.com/raidcraft/economy/compare/v1.5.2...v1.5.3) (2020-12-17)
 
 
