@@ -1,5 +1,7 @@
-package de.raidcraft.economy;
+package de.raidcraft.economy.wrapper;
 
+import de.raidcraft.economy.EconomyPlugin;
+import de.raidcraft.economy.RCEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
