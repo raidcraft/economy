@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/raidcraft/economy/compare/v2.0.0...v2.0.1) (2020-12-17)
+
+
+### Bug Fixes
+
+* **test:** fallback to empty wrapper implementation if vault is not found ([7eb29cc](https://github.com/raidcraft/economy/commit/7eb29cc10b1453dec610e694c175493e704899ed))
+
 # [2.0.0](https://github.com/raidcraft/economy/compare/v1.5.3...v2.0.0) (2020-12-17)
 
 
