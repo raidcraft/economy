@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/raidcraft/economy/compare/v2.0.1...v2.0.2) (2021-01-09)
+
+
+### Bug Fixes
+
+* **cmd:** payed player receives no message about transaction ([3079b74](https://github.com/raidcraft/economy/commit/3079b743e127bdf37a2a6e2c477ce99d2e87d58d)), closes [#8](https://github.com/raidcraft/economy/issues/8)
+
 ## [2.0.1](https://github.com/raidcraft/economy/compare/v2.0.0...v2.0.1) (2020-12-17)
 
 
