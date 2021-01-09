@@ -56,6 +56,8 @@ public final class Messages {
             sendConsole((ConsoleCommandSender) issuer, message);
         } else if (issuer instanceof RemoteConsoleCommandSender) {
             sendRemote((RemoteConsoleCommandSender) issuer, message);
+        } else if (issuer instanceof EconomyPlayer) {
+            send(((EconomyPlayer) issuer).id(), message);
         }
     }
 
@@ -229,6 +231,18 @@ public final class Messages {
                 .append(text(" hast ", GREEN))
                 .append(account(result.transaction().target()))
                 .append(text(" erfolgreich ", GREEN))
+                .append(text(format, AQUA))
+                .append(text(" überwiesen.", GREEN))
+                .build();
+    }
+
+    public static Component payReceive(Transaction.Result result) {
+
+        String format = RCEconomy.instance().format(result.amount());
+        return text()
+                .append(text(EconomyPlayer.of(result.transaction().source()).map(EconomyPlayer::name).orElse("N/A"), GOLD, BOLD)
+                        .hoverEvent(playerInfo(EconomyPlayer.of(result.transaction().source()).orElse(null))))
+                .append(text(" hat Dir ", GREEN))
                 .append(text(format, AQUA))
                 .append(text(" überwiesen.", GREEN))
                 .build();
