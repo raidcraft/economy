@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/raidcraft/economy/compare/v2.0.2...v2.1.0) (2021-01-14)
+
+
+### Features
+
+* add art actions and requirements ([0528952](https://github.com/raidcraft/economy/commit/0528952cdaceb6fc44b36dabee7dd2b2399e7763))
+
 ## [2.0.2](https://github.com/raidcraft/economy/compare/v2.0.1...v2.0.2) (2021-01-09)
 
 
