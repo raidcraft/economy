@@ -4,11 +4,17 @@ import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.PaperCommandManager;
 import com.google.common.base.Strings;
+import de.raidcraft.economy.art.AddMoneyAction;
+import de.raidcraft.economy.art.HasMoneyRequirement;
+import de.raidcraft.economy.art.RemoveMoneyAction;
 import de.raidcraft.economy.commands.Commands;
 import de.raidcraft.economy.entities.Account;
 import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
 import de.raidcraft.economy.entities.Transaction;
+import io.artframework.Scope;
+import io.artframework.annotations.ArtModule;
+import io.artframework.annotations.OnLoad;
 import io.ebean.Database;
 import kr.entree.spigradle.annotations.PluginMain;
 import lombok.AccessLevel;
@@ -27,6 +33,7 @@ import java.io.File;
 import java.util.Optional;
 
 @PluginMain
+@ArtModule(value = "rceconomy", packages = "de.raidcraft.economy.art")
 public class EconomyPlugin extends JavaPlugin {
 
     public static final String PERMISSION_PREFIX = "rceconomy.";
@@ -56,6 +63,17 @@ public class EconomyPlugin extends JavaPlugin {
         super(loader, description, dataFolder, file);
         instance = this;
         testing = true;
+    }
+
+    @OnLoad
+    public void onArtLoad(Scope scope) {
+
+        scope.configuration().art()
+                .actions()
+                    .add(AddMoneyAction.class)
+                    .add(RemoveMoneyAction.class)
+                .requirements()
+                    .add(HasMoneyRequirement.class);
     }
 
     @Override
