@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/raidcraft/economy/compare/v2.1.0...v2.1.1) (2021-01-15)
+
+
+### Bug Fixes
+
+* register art directly ([59e8b96](https://github.com/raidcraft/economy/commit/59e8b96f5e4b85f7aa34197ae8d6ee71dd5ada59))
+
 # [2.1.0](https://github.com/raidcraft/economy/compare/v2.0.2...v2.1.0) (2021-01-14)
 
 
