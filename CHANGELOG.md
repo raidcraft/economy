@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/raidcraft/economy/compare/v2.1.1...v2.1.2) (2021-01-16)
+
+
+### Bug Fixes
+
+* add softdepend and depend on art-framework and ebean-wrapper ([e3e768c](https://github.com/raidcraft/economy/commit/e3e768c21f823260ac49ae7a097a7f1de2fd1f1f))
+
 ## [2.1.1](https://github.com/raidcraft/economy/compare/v2.1.0...v2.1.1) (2021-01-15)
 
 
