@@ -12,6 +12,7 @@ import de.raidcraft.economy.entities.Account;
 import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
 import de.raidcraft.economy.entities.Transaction;
+import de.raidcraft.economy.events.MoneyTransactionEvent;
 import io.artframework.Scope;
 import io.artframework.annotations.ArtModule;
 import io.artframework.annotations.OnLoad;
@@ -25,6 +26,9 @@ import net.silthus.ebean.Config;
 import net.silthus.ebean.EbeanWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -34,7 +38,7 @@ import java.util.Optional;
 
 @PluginMain
 @ArtModule(value = "rceconomy", packages = "de.raidcraft.economy.art")
-public class EconomyPlugin extends JavaPlugin {
+public class EconomyPlugin extends JavaPlugin implements Listener {
 
     public static final String PERMISSION_PREFIX = "rceconomy.";
 
@@ -92,6 +96,15 @@ public class EconomyPlugin extends JavaPlugin {
         loadConfig();
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onTransaction(MoneyTransactionEvent event) {
+
+        Account target = event.getTransaction().target();
+        if (target.isPlayerAccount()) {
+            Messages.send(EconomyPlayer.of(target), Messages.payReceive(event.getTransaction()));
+        }
+    }
+
     private void loadConfig() {
 
         getDataFolder().mkdirs();
@@ -112,7 +125,7 @@ public class EconomyPlugin extends JavaPlugin {
 
     private void setupListener() {
 
-
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
     private void setupCommands() {

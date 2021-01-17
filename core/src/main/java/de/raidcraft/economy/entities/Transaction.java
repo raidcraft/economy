@@ -3,6 +3,7 @@ package de.raidcraft.economy.entities;
 import de.raidcraft.economy.RCEconomy;
 import de.raidcraft.economy.TransactionReason;
 import de.raidcraft.economy.TransactionStatus;
+import de.raidcraft.economy.events.MoneyTransactionEvent;
 import io.ebean.annotation.DbJson;
 import io.ebean.annotation.Transactional;
 import io.ebean.text.json.EJson;
@@ -12,6 +13,7 @@ import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.Accessors;
 import net.silthus.ebean.BaseEntity;
+import org.bukkit.Bukkit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -140,7 +142,7 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
     }
 
     /**
-     * Executes this transaction transfering money from the source account to the target account.
+     * Executes this transaction transferring money from the source account to the target account.
      * <p>If the source account is not the server account a has enough check will be performed.
      * The transaction will fail if the source account has not enough money.
      * <p>You can provide additional data for this transaction before calling this method
@@ -178,8 +180,15 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
             balance = 0;
         }
 
+
         newSourceBalance(balance);
         newTargetBalance(target.balance() + amount);
+
+        MoneyTransactionEvent event = new MoneyTransactionEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled())
+            return new Result(this, TransactionStatus.FAILURE, "Transaktion wurde durch ein Plugin abgebrochen.");
 
         source.balance(newSourceBalance);
         target.balance(newTargetBalance);

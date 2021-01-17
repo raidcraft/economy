@@ -120,7 +120,6 @@ public class Commands extends BaseCommand {
 
         if (result.success()) {
             send(getCurrentCommandIssuer(), paySuccess(result));
-            send(target, payReceive(result));
         } else {
             send(getCurrentCommandIssuer(), transactionError(result));
         }

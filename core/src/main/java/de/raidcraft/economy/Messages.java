@@ -7,6 +7,7 @@ import de.raidcraft.economy.entities.BankAccount;
 import de.raidcraft.economy.entities.EconomyPlayer;
 import de.raidcraft.economy.entities.Transaction;
 import de.raidcraft.economy.util.TimeUtil;
+import lombok.NonNull;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -253,16 +254,27 @@ public final class Messages {
                 .build();
     }
 
-    public static Component payReceive(Transaction.Result result) {
+    public static Component payReceive(@NonNull Transaction transaction) {
 
-        String format = RCEconomy.instance().format(result.amount());
-        return text()
-                .append(text(EconomyPlayer.of(result.transaction().source()).map(EconomyPlayer::name).orElse("N/A"), GOLD, BOLD)
-                        .hoverEvent(playerInfo(EconomyPlayer.of(result.transaction().source()).orElse(null))))
-                .append(text(" hat Dir ", GREEN))
-                .append(text(format, AQUA))
-                .append(text(" überwiesen.", GREEN))
-                .build();
+        String format = RCEconomy.instance().format(transaction.amount());
+
+        if (transaction.source().isServerAccount()) {
+            return text()
+                    .append(text("Du", GOLD, BOLD)
+                            .hoverEvent(playerInfo(EconomyPlayer.of(transaction.target()).orElse(null))))
+                    .append(text(" hast ", GREEN))
+                    .append(text(format, AQUA))
+                    .append(text(" erhalten.", GREEN))
+                    .build();
+        } else {
+            return text()
+                    .append(text(EconomyPlayer.of(transaction.source()).map(EconomyPlayer::name).orElse("N/A"), GOLD, BOLD)
+                            .hoverEvent(playerInfo(EconomyPlayer.of(transaction.source()).orElse(null))))
+                    .append(text(" hat Dir ", GREEN))
+                    .append(text(format, AQUA))
+                    .append(text(" überwiesen.", GREEN))
+                    .build();
+        }
     }
 
     public static Component transactionSuccess(Transaction.Result result) {
