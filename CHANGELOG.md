@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/raidcraft/economy/compare/v2.1.2...v2.2.0) (2021-01-17)
+
+
+### Features
+
+* **msg:** display source and target balance in transaction history ([3002d16](https://github.com/raidcraft/economy/commit/3002d16dfb7ff71c192dd16c5cdcf63cd0963e5c)), closes [#14](https://github.com/raidcraft/economy/issues/14)
+
 ## [2.1.2](https://github.com/raidcraft/economy/compare/v2.1.1...v2.1.2) (2021-01-16)
 
 
