@@ -250,7 +250,8 @@ public final class Messages {
                 .append(account(result.transaction().target()))
                 .append(text(" erfolgreich ", GREEN))
                 .append(text(format, AQUA))
-                .append(text(" überwiesen.", GREEN))
+                .append(text(" überwiesen. ", GREEN))
+                .append(text("[?]", GRAY).hoverEvent(transactionInfo(result.transaction())))
                 .build();
     }
 
@@ -264,7 +265,8 @@ public final class Messages {
                             .hoverEvent(playerInfo(EconomyPlayer.of(transaction.target()).orElse(null))))
                     .append(text(" hast ", GREEN))
                     .append(text(format, AQUA))
-                    .append(text(" erhalten.", GREEN))
+                    .append(text(" erhalten. ", GREEN))
+                    .append(text("[?]", GRAY).hoverEvent(transactionInfo(transaction)))
                     .build();
         } else {
             return text()
@@ -272,7 +274,8 @@ public final class Messages {
                             .hoverEvent(playerInfo(EconomyPlayer.of(transaction.source()).orElse(null))))
                     .append(text(" hat Dir ", GREEN))
                     .append(text(format, AQUA))
-                    .append(text(" überwiesen.", GREEN))
+                    .append(text(" überwiesen. ", GREEN))
+                    .append(text("[?]", GRAY).hoverEvent(transactionInfo(transaction)))
                     .build();
         }
     }
@@ -286,7 +289,8 @@ public final class Messages {
                 .append(account(result.transaction().target()))
                 .append(text(" erfolgreich ", GREEN))
                 .append(text(format, AQUA))
-                .append(text(" überwiesen.", GREEN))
+                .append(text(" überwiesen. ", GREEN))
+                .append(text("[?]", GRAY).hoverEvent(transactionInfo(result.transaction())))
                 .build();
     }
 
