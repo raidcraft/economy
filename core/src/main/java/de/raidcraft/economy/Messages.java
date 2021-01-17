@@ -200,7 +200,8 @@ public final class Messages {
 
     public static Component transactionInfo(Transaction transaction) {
 
-        String formattedAmount = RCEconomy.instance().format(transaction.amount());
+        RCEconomy economy = RCEconomy.instance();
+        String formattedAmount = economy.format(transaction.amount());
 
         TextComponent.Builder builder = text().append(header(text(formattedAmount, GOLD)
                 .append(text(" - ", DARK_AQUA))
@@ -212,10 +213,26 @@ public final class Messages {
                 .append(text("Ziel: ", YELLOW))
                 .append(account(transaction.target())).append(newline())
                 .append(text("Betrag: ", YELLOW))
-                .append(text(formattedAmount, AQUA));
+                .append(text(formattedAmount, AQUA)).append(newline());
+
+        if (transaction.source().isPlayerAccount()) {
+            builder.append(text("Kontostand: ", YELLOW))
+                    .append(text(economy.format(transaction.oldSourceBalance()), AQUA))
+                    .append(text(" --> ", DARK_AQUA))
+                    .append(text(economy.format(transaction.newSourceBalance()), AQUA))
+                    .append(newline());
+        }
+
+        if (transaction.target().isPlayerAccount()) {
+            builder.append(text("Ziel-Kontostand: ", YELLOW))
+                    .append(text(economy.format(transaction.oldSourceBalance()), AQUA))
+                    .append(text(" --> ", DARK_AQUA))
+                    .append(text(economy.format(transaction.newSourceBalance()), AQUA))
+                    .append(newline());
+        }
 
         if (!Strings.isNullOrEmpty(transaction.details())) {
-            builder.append(newline()).append(text("Details: ", YELLOW))
+            builder.append(text("Details: ", YELLOW))
                     .append(text(transaction.details(), GRAY, ITALIC));
         }
 
