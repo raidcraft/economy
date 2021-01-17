@@ -1,3 +1,11 @@
+# [2.3.0](https://github.com/raidcraft/economy/compare/v2.2.0...v2.3.0) (2021-01-17)
+
+
+### Features
+
+* add transaction info to received payments ([7f10118](https://github.com/raidcraft/economy/commit/7f101181780d352a9fc9f6cfee31db9fcd0c11ca))
+* print transactions sent by server in player chat ([a06e504](https://github.com/raidcraft/economy/commit/a06e504277281ae1c2c099011065060dd09ac908))
+
 # [2.2.0](https://github.com/raidcraft/economy/compare/v2.1.2...v2.2.0) (2021-01-17)
 
 
