@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/raidcraft/economy/compare/v2.3.0...v2.3.1) (2021-01-30)
+
+
+### Bug Fixes
+
+* messages to economy player not sent ([0a70ac0](https://github.com/raidcraft/economy/commit/0a70ac06c7906272ce01b50f0510e1e923964f18))
+
 # [2.3.0](https://github.com/raidcraft/economy/compare/v2.2.0...v2.3.0) (2021-01-17)
 
 
