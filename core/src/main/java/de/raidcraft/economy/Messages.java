@@ -47,18 +47,18 @@ public final class Messages {
         send(playerId, builder.build());
     }
 
-    public static <TIssuer> void send(TIssuer commandIssuer, Component message) {
+    public static void send(Object commandIssuer, Component message) {
 
-        Object issuer = ((CommandIssuer) commandIssuer).getIssuer();
-
-        if (issuer instanceof Player) {
-            sendPlayer((Player) issuer, message);
-        } else if (issuer instanceof ConsoleCommandSender) {
-            sendConsole((ConsoleCommandSender) issuer, message);
-        } else if (issuer instanceof RemoteConsoleCommandSender) {
-            sendRemote((RemoteConsoleCommandSender) issuer, message);
-        } else if (issuer instanceof EconomyPlayer) {
-            send(((EconomyPlayer) issuer).id(), message);
+        if (commandIssuer instanceof EconomyPlayer) {
+            send(((EconomyPlayer) commandIssuer).id(), message);
+        } else if (commandIssuer instanceof Player) {
+            sendPlayer((Player) commandIssuer, message);
+        } else if (commandIssuer instanceof ConsoleCommandSender) {
+            sendConsole((ConsoleCommandSender) commandIssuer, message);
+        } else if (commandIssuer instanceof RemoteConsoleCommandSender) {
+            sendRemote((RemoteConsoleCommandSender) commandIssuer, message);
+        } else if (commandIssuer instanceof CommandIssuer) {
+            send((Object) ((CommandIssuer) commandIssuer).getIssuer(), message);
         }
     }
 
