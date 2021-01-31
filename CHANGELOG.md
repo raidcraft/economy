@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/raidcraft/economy/compare/v2.3.1...v2.3.2) (2021-01-31)
+
+
+### Bug Fixes
+
+* **build:** shade adventure text lib properly ([30d3122](https://github.com/raidcraft/economy/commit/30d3122258c61afbbe26d90a8e187847e1ce28c5))
+
 ## [2.3.1](https://github.com/raidcraft/economy/compare/v2.3.0...v2.3.1) (2021-01-30)
 
 
