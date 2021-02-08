@@ -1,3 +1,10 @@
+## [2.3.3](https://github.com/raidcraft/economy/compare/v2.3.2...v2.3.3) (2021-02-08)
+
+
+### Bug Fixes
+
+* economy not starting due to invalid shaded configlib ([3011cab](https://github.com/raidcraft/economy/commit/3011caba7e4d3e25ca69969c32a5960753fb28ea))
+
 ## [2.3.2](https://github.com/raidcraft/economy/compare/v2.3.1...v2.3.2) (2021-01-31)
 
 
