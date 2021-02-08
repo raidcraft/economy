@@ -74,7 +74,6 @@ public class RCEconomy implements Economy {
 
     public void load() {
 
-        getConfig().loadAndSave();
         this.decimalFormat = new DecimalFormat(getConfig().getDecimalFormat());
     }
 

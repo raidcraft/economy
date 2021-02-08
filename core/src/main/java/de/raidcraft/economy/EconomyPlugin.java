@@ -25,6 +25,8 @@ import lombok.experimental.Accessors;
 import net.silthus.ebean.Config;
 import net.silthus.ebean.EbeanWrapper;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,6 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 @PluginMain
@@ -107,9 +110,16 @@ public class EconomyPlugin extends JavaPlugin implements Listener {
 
     private void loadConfig() {
 
-        getDataFolder().mkdirs();
-        pluginConfig = new PluginConfig(new File(getDataFolder(), "config.yml").toPath());
-        pluginConfig.loadAndSave();
+        try {
+            getDataFolder().mkdirs();
+            saveDefaultConfig();
+            FileConfiguration config = getConfig();
+            config.load(new File(getDataFolder(), "config.yml"));
+            pluginConfig = new PluginConfig(config);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     private void setupVault() {

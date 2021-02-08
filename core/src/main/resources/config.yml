@@ -1,0 +1,11 @@
+# How many digits after 0 are supported.
+fractional_digits: 0
+currency_name_singular: Coin
+currency_name_plural: Coins
+currency_symbol: c
+decimal_format: 0,00c
+database:
+  username: sa
+  password: sa
+  driver: h2
+  url: jdbc:h2:~/economy.db
