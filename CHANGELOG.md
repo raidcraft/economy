@@ -1,3 +1,10 @@
+## [2.3.5](https://github.com/raidcraft/economy/compare/v2.3.4...v2.3.5) (2021-02-10)
+
+
+### Bug Fixes
+
+* load economy before art-framework ([c92cf3a](https://github.com/raidcraft/economy/commit/c92cf3a0dab47541671220629213518aa728403d))
+
 ## [2.3.4](https://github.com/raidcraft/economy/compare/v2.3.3...v2.3.4) (2021-02-10)
 
 
