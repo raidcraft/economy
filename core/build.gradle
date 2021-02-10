@@ -13,7 +13,7 @@ spigot {
     apiVersion = project.property("apiVersion")
     load = STARTUP
     depends = ['Vault', 'ebean-wrapper']
-    softDepends = ['art-framework']
+    loadBefore = ['art-framework']
 }
 
 dependencies {
