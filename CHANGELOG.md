@@ -1,3 +1,10 @@
+## [2.3.6](https://github.com/raidcraft/economy/compare/v2.3.5...v2.3.6) (2021-02-10)
+
+
+### Bug Fixes
+
+* revert loadbefore art-framework ([5201f98](https://github.com/raidcraft/economy/commit/5201f98323fbe65c2cace21ae67bd314379cdbe6))
+
 ## [2.3.5](https://github.com/raidcraft/economy/compare/v2.3.4...v2.3.5) (2021-02-10)
 
 
