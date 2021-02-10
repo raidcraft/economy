@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @PluginMain
-@ArtModule(value = "rceconomy", packages = "de.raidcraft.economy.art")
+@ArtModule(value = "rceconomy")
 public class EconomyPlugin extends JavaPlugin implements Listener {
 
     public static final String PERMISSION_PREFIX = "rceconomy.";
