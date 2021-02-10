@@ -11,7 +11,6 @@ plugins {
     id 'idea'
     id 'io.freefair.lombok' version '5.3.0' apply false
     id 'io.ebean' version '12.6.6' apply false
-    id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
 }
 
 subprojects {
@@ -20,14 +19,9 @@ subprojects {
     apply plugin: 'idea'
     apply plugin: 'io.freefair.lombok'
     apply plugin: 'io.ebean'
-    apply plugin: 'com.github.johnrengelman.shadow'
 
     apply from: "$rootDir/gradle/jacoco.gradle"
     apply from: "$rootDir/gradle/publish.gradle"
-
-    if (project.hasProperty("local_script")) {
-        apply from: file(local_script + "/build.local.gradle")
-    }
 
     sourceCompatibility = 11
     targetCompatibility = 11
@@ -61,20 +55,6 @@ subprojects {
         implementation "org.spigotmc:spigot-api:${mcVersion}-R0.1-SNAPSHOT"
         api "com.github.MilkBowl:VaultAPI:1.7"
     }
-
-    shadowJar {
-        classifier = ''
-        dependencies {
-            include(dependency('co.aikar:acf-paper:'))
-            include(dependency('net.kyori::'))
-        }
-        relocate 'co.aikar.commands', "shadow.${pluginName}.acf"
-        relocate 'co.aikar.locales', "shadow.${pluginName}.locales"
-        relocate 'net.kyori', "shadow.${pluginName}.text"
-    }
-
-    tasks.build.dependsOn(shadowJar)
-    tasks.publish.dependsOn(shadowJar)
 
     test {
         useJUnitPlatform()

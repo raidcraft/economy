@@ -141,10 +141,6 @@ public class EconomyPlugin extends JavaPlugin implements Listener {
     private void setupCommands() {
 
         this.commandManager = new PaperCommandManager(this);
-        commandManager.setDefaultExceptionHandler((command, registeredCommand, sender, args, t) -> {
-            t.printStackTrace();
-            return true;
-        });
 
         // contexts
         registerEconomyPlayerContext(commandManager);
