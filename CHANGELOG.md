@@ -1,3 +1,11 @@
+## [2.3.4](https://github.com/raidcraft/economy/compare/v2.3.3...v2.3.4) (2021-02-10)
+
+
+### Bug Fixes
+
+* plugin not loading shaded acf ([190ad4c](https://github.com/raidcraft/economy/commit/190ad4c3f85b6da209a8cbc2e9b4df3cd6c440fa))
+* update art-framework ([0ab111d](https://github.com/raidcraft/economy/commit/0ab111dbc549d035d461970d8512fa4bc16846c6))
+
 ## [2.3.3](https://github.com/raidcraft/economy/compare/v2.3.2...v2.3.3) (2021-02-08)
 
 
