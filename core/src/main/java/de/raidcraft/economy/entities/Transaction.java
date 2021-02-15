@@ -4,6 +4,7 @@ import de.raidcraft.economy.RCEconomy;
 import de.raidcraft.economy.TransactionReason;
 import de.raidcraft.economy.TransactionStatus;
 import de.raidcraft.economy.events.MoneyTransactionEvent;
+import de.raidcraft.economy.events.PlayerBalanceChangedEvent;
 import io.ebean.annotation.DbJson;
 import io.ebean.annotation.Transactional;
 import io.ebean.text.json.EJson;
@@ -20,6 +21,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.IOException;
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -198,6 +200,13 @@ public class Transaction extends BaseEntity implements Comparable<Transaction> {
 
         status(TransactionStatus.SUCCESS);
         save();
+
+        if (target.isPlayerAccount()) {
+            EconomyPlayer.of(target)
+                    .map(player -> Bukkit.getOfflinePlayer(player.id()))
+                    .ifPresent(player -> Bukkit.getPluginManager()
+                            .callEvent(new PlayerBalanceChangedEvent(player, this)));
+        }
 
         return new Result(this);
     }
