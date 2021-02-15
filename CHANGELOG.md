@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/raidcraft/economy/compare/v2.3.6...v2.4.0) (2021-02-15)
+
+
+### Features
+
+* add balance change event ([2bf8844](https://github.com/raidcraft/economy/commit/2bf8844dcf70a09fefaea93d5a78a458736a229e))
+
 ## [2.3.6](https://github.com/raidcraft/economy/compare/v2.3.5...v2.3.6) (2021-02-10)
 
 
