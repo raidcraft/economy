@@ -18,7 +18,7 @@ spigot {
 dependencies {
     implementation 'net.silthus:ebean-wrapper:2.9.1'
     implementation 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2.1'
 
     implementation 'net.kyori:adventure-api:4.9.2'
     implementation 'net.kyori:adventure-platform-bukkit:4.0.1-SNAPSHOT'
