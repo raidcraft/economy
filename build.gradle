@@ -10,7 +10,7 @@ plugins {
     id 'jacoco'
     id 'idea'
     id 'io.freefair.lombok' version '6.4.3' apply false
-    id 'io.ebean' version '13.1.0' apply false
+    id 'io.ebean' version '13.14.0' apply false
 }
 
 subprojects {
